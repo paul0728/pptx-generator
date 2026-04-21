@@ -1,6 +1,6 @@
 # PPTX Generator
 
-[![PyPI version](https://badge.fury.io/py/pptx-generator.svg)](https://pypi.org/project/pptx-generator/)
+[![PyPI version](https://badge.fury.io/py/ai-pptx-generator.svg)](https://pypi.org/project/ai-pptx-generator/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
@@ -43,7 +43,7 @@
 ### 方式一：從 PyPI 安裝（推薦）
 
 ```bash
-pip install pptx-generator
+pip install ai-pptx-generator
 ```
 
 ### 方式二：從 GitHub 安裝
@@ -177,7 +177,7 @@ your-project/
 pip install python-pptx requests Pillow
 ```
 
-或者如果你已經 `pip install pptx-generator`，依賴會自動安裝。
+或者如果你已經 `pip install ai-pptx-generator`，依賴會自動安裝。
 
 #### 步驟 3：在 Kiro 中使用
 
