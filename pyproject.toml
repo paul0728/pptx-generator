@@ -1,0 +1,46 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "pptx-generator"
+version = "0.1.0"
+description = "將任何文件或報告轉換為企業級 PPTX 簡報 — Structured JSON → Mermaid diagrams → python-pptx assembly"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+authors = [
+    {name = "paul0728", email = "paulpuwang@gmail.com"},
+]
+keywords = ["pptx", "powerpoint", "presentation", "slides", "mermaid", "kiro", "skill"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Office/Business",
+    "Topic :: Software Development :: Libraries",
+]
+dependencies = [
+    "python-pptx>=0.6.21",
+    "requests>=2.28.0",
+    "Pillow>=9.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/paul0728/pptx-generator"
+Repository = "https://github.com/paul0728/pptx-generator"
+Issues = "https://github.com/paul0728/pptx-generator/issues"
+
+[project.scripts]
+pptx-generate = "pptx_generator.generator:main"
+
+[tool.setuptools.packages.find]
+include = ["pptx_generator*"]
+
+[tool.setuptools.package-data]
+pptx_generator = ["assets/*.pptx", "assets/*.json"]
