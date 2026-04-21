@@ -16,6 +16,39 @@ description: >
 
 ---
 
+## 推薦使用流程
+
+**使用者不需要手寫投影片資料。** 推薦流程如下：
+
+```
+使用者提供需求描述 / 原始內容
+        ↓
+AI 根據「提示詞樣板」自動產出 slides.json
+        ↓
+pptx-generate 生成 PPTX 簡報
+```
+
+### 提示詞樣板 (Prompt Template)
+
+本工具提供一份標準化的提示詞樣板：**[assets/prompt-template.md](assets/prompt-template.md)**
+
+此樣板包含：
+- 完整的 slides.json schema
+- 所有 11 種投影片類型的範例
+- 內容量限制規則
+- 排版規則
+- 完整的輸出範例
+
+**使用方式：**
+1. 將 `prompt-template.md` 的內容貼給任何 AI（ChatGPT、Claude、Gemini 等）
+2. 接著提供你的需求描述或原始內容（文件、報告、筆記、口頭指示皆可）
+3. AI 產出 `slides.json`
+4. 執行 `pptx-generate --input slides.json --out output.pptx -v`
+
+**在 AI IDE 中更簡單：** 直接說「幫我做簡報」，AI 會自動讀取此樣板並完成全部流程。
+
+---
+
 ## 使用者輸入
 
 ### 必要
@@ -46,9 +79,15 @@ description: >
 
 ## 支援的輸入格式
 
-本工具支援三種輸入格式，使用者可依習慣選擇：
+工具支援三種輸入格式。推薦讓 AI 根據 prompt template 產出 JSON，但也可手動撰寫：
 
-### 1. Markdown（最直覺）
+### 1. JSON（推薦 — AI 產出 + 完整控制）
+
+由 AI 根據 [prompt-template.md](assets/prompt-template.md) 自動產出，或手動撰寫。
+
+- 範例：[assets/example-slides.json](assets/example-slides.json)
+
+### 2. Markdown（手動撰寫最直覺）
 
 用 Markdown 撰寫投影片內容，工具自動轉換為簡報結構：
 
@@ -64,12 +103,10 @@ Q2 2026 Review
 ## 大綱
 - 專案背景
 - 系統架構
-- 關鍵成果
 
 ## 關鍵成果
 - 查詢延遲下降 42%
   - p95 由 2.3s → 1.3s
-- 錯誤率下降至 0.4%
 ```
 
 Markdown 對應規則：
@@ -79,7 +116,10 @@ Markdown 對應規則：
 - 程式碼區塊 → code_demo
 - `> 引用` → speaker notes
 
-### 2. YAML（可讀性佳）
+> 注意：Markdown 格式僅支援 `title_slide`、`section_slide`、`bullet_points`、`code_demo`。
+> 需要 `kpi_slide`、`table`、`two_column` 等進階類型時，請使用 JSON 或 YAML。
+
+### 3. YAML（可讀性佳）
 
 比 JSON 更易讀寫，支援扁平格式（不需要巢狀 `content`）：
 
@@ -101,27 +141,23 @@ slides:
 
 > YAML 輸入需要安裝 PyYAML：`pip install pyyaml`
 
-### 3. JSON（完整控制）
-
-適合程式化生成或需要精確控制每個欄位的場景：
-
-- 範例 JSON：[assets/example-slides.json](assets/example-slides.json)
-
 ---
 
 ## Pipeline
 
 ```
-Phase 0  規劃大綱
-Phase 1  內容解析 → slides data (JSON / YAML / Markdown)
+Phase 0  規劃大綱（AI 根據 prompt-template.md 自動執行）
+Phase 1  內容解析 → slides.json（AI 產出，或使用者提供 JSON / YAML / Markdown）
 Phase 2  Mermaid 圖表渲染
 Phase 3  python-pptx 組裝
 Phase 4  品質驗證
 ```
 
-- 若使用者提供了投影片資料檔（JSON / YAML / Markdown），跳過 Phase 0 和 Phase 1，直接進入 Phase 2。
+- **Phase 0 + 1 由 AI 自動完成**：AI 讀取 [assets/prompt-template.md](assets/prompt-template.md) 中的 schema 與規則，根據使用者提供的內容自動產出 `slides.json`。
+- 若使用者已提供投影片資料檔（JSON / YAML / Markdown），跳過 Phase 0 和 Phase 1，直接進入 Phase 2。
 - 參考腳本：[scripts/generate_pptx_template.py](scripts/generate_pptx_template.py)
 - 範例檔案：[assets/example-slides.json](assets/example-slides.json) / [assets/example-slides.yaml](assets/example-slides.yaml) / [assets/example-slides.md](assets/example-slides.md)
+- 提示詞樣板：[assets/prompt-template.md](assets/prompt-template.md)
 - 依賴：`python-pptx`、`requests`、`Pillow`（YAML 輸入另需 `pyyaml`）
 
 ### Quickstart
@@ -164,6 +200,8 @@ pptx-generate \
 
 ## Phase 0 — 大綱規劃
 
+> **此階段由 AI 自動執行。** AI 讀取 [assets/prompt-template.md](assets/prompt-template.md) 中的規則來規劃大綱。
+
 1. 根據內容量與需求，估算合理頁數。
 2. 列出每一頁的標題與 slide type。
 3. **大綱固定為第 2 頁**（封面之後），使用 `outline_slide`。
@@ -172,7 +210,9 @@ pptx-generate \
 
 ---
 
-## Phase 1 — 內容解析 → 投影片資料
+## Phase 1 — 內容解析 → slides.json
+
+> **此階段由 AI 自動執行。** AI 根據 [assets/prompt-template.md](assets/prompt-template.md) 中的 schema、slide types、內容量限制，將使用者的原始內容轉換為 `slides.json`。
 
 ### slides.json Schema
 

@@ -6,15 +6,16 @@
 
 將任何文件、報告或結構化內容轉換為企業級 PPTX 簡報。
 
-支援三種輸入格式：**Markdown**、**YAML**、**JSON** — 不需要手寫 JSON，用 Markdown 就能生成簡報。
+**推薦用法：** 把你的內容 + [提示詞樣板](assets/prompt-template.md) 一起餵給 AI → AI 自動產出 `slides.json` → 工具生成 PPTX。不需要手寫任何投影片資料。
 
-也可作為 AI IDE Skill 使用，讓 AI 自動完成從內容分析到 PPTX 生成的完整流程。
+也可作為 AI IDE Skill 使用，直接說「幫我做簡報」就能自動完成全部流程。
 
 ---
 
 ## 目錄
 
 - [功能特色](#功能特色)
+- [快速開始](#快速開始)
 - [安裝方式](#安裝方式)
 - [CLI 使用方式](#cli-使用方式)
 - [輸入格式](#輸入格式)
@@ -29,13 +30,55 @@
 
 ## 功能特色
 
-- **三種輸入格式**：Markdown（最直覺）、YAML（可讀性佳）、JSON（完整控制）
+- **AI 驅動**：提供[提示詞樣板](assets/prompt-template.md)，搭配任何 AI 自動產出投影片資料
+- **三種輸入格式**：JSON（AI 產出 / 完整控制）、Markdown（手寫最直覺）、YAML（可讀性佳）
 - **11 種投影片類型**：封面、大綱、章節、條列、架構圖、程式碼、雙欄對比、表格、圖片、KPI 卡片、結尾
 - **Mermaid 圖表渲染**：自動將 Mermaid 語法轉為高解析度 PNG 嵌入投影片
 - **CJK 感知自動排版**：中英文混合內容自動縮放字體，確保不溢出
 - **品牌客製化**：支援品牌色、自訂字體、頁腳、頁碼、浮水印
 - **模板支援**：可套用自訂 `.pptx` 模板，自動偵測 Layout
 - **品質驗證**：生成後自動檢查每頁是否有可見內容
+
+---
+
+## 快速開始
+
+### 方式一：AI 自動產出（推薦）
+
+最簡單的用法 — 不需要手寫任何投影片資料：
+
+1. 將 [`assets/prompt-template.md`](assets/prompt-template.md) 的內容貼給任何 AI（ChatGPT、Claude、Gemini 等）
+2. 接著提供你的需求描述或原始內容（文件、報告、筆記皆可）
+3. AI 會產出一份 `slides.json`
+4. 存檔後執行：
+
+**Windows (PowerShell):**
+```powershell
+pptx-generate --input slides.json --out output.pptx -v
+```
+
+**Linux / macOS:**
+```bash
+pptx-generate --input slides.json --out output.pptx -v
+```
+
+### 方式二：在 AI IDE 中使用（最簡單）
+
+安裝為 AI Skill 後，直接在聊天視窗說：
+
+```
+幫我把這份會議記錄做成簡報
+```
+
+AI 會自動完成全部流程（規劃大綱 → 產出 slides.json → 生成 PPTX）。
+
+### 方式三：手動撰寫 Markdown
+
+如果你偏好自己控制內容，可以用 Markdown 撰寫：
+
+```bash
+pptx-generate --input slides.md --out output.pptx -v
+```
 
 ---
 
@@ -176,7 +219,15 @@ pptx-generate \
 
 ## 輸入格式
 
-### Markdown（推薦 — 最直覺）
+### JSON（推薦 — AI 自動產出）
+
+使用 [提示詞樣板 (prompt-template.md)](assets/prompt-template.md) 搭配任何 AI，自動產出符合規範的 `slides.json`。
+
+樣板包含完整的 schema、所有 11 種投影片類型範例、內容量限制規則。使用者只需要提供原始內容，AI 就能產出可直接使用的 JSON。
+
+完整範例：[`assets/example-slides.json`](assets/example-slides.json)
+
+### Markdown（手動撰寫最直覺）
 
 用 Markdown 撰寫投影片內容，工具自動轉換為簡報結構。不需要學任何特殊格式。
 
@@ -448,8 +499,8 @@ AI 會自動：
 ## Pipeline 流程
 
 ```
-Phase 0  規劃大綱（AI Skill 模式，AI 自動執行）
-Phase 1  內容解析 → 投影片資料（Markdown / YAML / JSON）
+Phase 0  規劃大綱（AI 根據 prompt-template.md 自動執行）
+Phase 1  內容解析 → slides.json（AI 產出，或使用者提供 JSON / YAML / Markdown）
 Phase 2  Mermaid 圖表平行渲染（含快取與 CJK fallback）
 Phase 3  python-pptx 組裝（Layout 查找 → auto-fit → 品牌 chrome）
 Phase 4  品質驗證
@@ -476,7 +527,8 @@ pptx-generator/
 │   ├── example-output.pptx
 │   ├── example-slides.json
 │   ├── example-slides.yaml
-│   └── example-slides.md
+│   ├── example-slides.md
+│   └── prompt-template.md            # AI 提示詞樣板（核心）
 ├── SKILL.md                          # AI Skill 定義
 ├── pyproject.toml                    # PyPI 套件設定
 ├── requirements.txt
