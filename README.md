@@ -231,7 +231,7 @@ pptx-generate \
 
 用 Markdown 撰寫投影片內容，工具自動轉換為簡報結構。不需要學任何特殊格式。
 
-```markdown
+````markdown
 ---
 title: 專案進度報告
 version: 2026-Q2
@@ -261,7 +261,7 @@ def get_conn(dsn): ...
 
 ## Thank You
 Q & A
-```
+````
 
 **Markdown 對應規則：**
 
@@ -271,7 +271,7 @@ Q & A
 | `# H1`（後續） | `section_slide`（章節分隔） |
 | `## H2` | 新投影片（`bullet_points` 或 `code_demo`） |
 | 項目符號 `-` / `*` | `bullet_points` 的 points |
-| 程式碼區塊 ` ``` ` | `code_demo` |
+| 程式碼區塊 | `code_demo` |
 | `> 引用` | speaker notes |
 | YAML front matter | `presentation_metadata` |
 
