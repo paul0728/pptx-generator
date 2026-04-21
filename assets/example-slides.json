@@ -1,0 +1,167 @@
+{
+    "presentation_metadata": {
+        "title": "範例簡報",
+        "version": "2026-04-21"
+    },
+    "slides": [
+        {
+            "id": 1,
+            "type": "title_slide",
+            "content": {
+                "title": "專案進度報告",
+                "sub_title": "Q2 2026 Review\n2026-04-21",
+                "notes": "開場 30 秒簡介專案目標。"
+            }
+        },
+        {
+            "id": 2,
+            "type": "outline_slide",
+            "content": {
+                "title": "大綱",
+                "points": [
+                    "1. 專案背景",
+                    "2. 系統架構",
+                    "3. 關鍵成果",
+                    "4. 後續規劃"
+                ]
+            }
+        },
+        {
+            "id": 3,
+            "type": "section_slide",
+            "content": {
+                "title": "系統架構",
+                "sub_title": "資料流與核心元件"
+            }
+        },
+        {
+            "id": 4,
+            "type": "architecture_diagram",
+            "content": {
+                "title": "資料流架構",
+                "mermaid_code": "flowchart LR\n  A[Client] --> B[API Gateway]\n  B --> C[Agent]\n  C --> D[(Database)]\n  C --> E[LLM]",
+                "description": "API Gateway 後由 Agent 進行任務編排，結果落地至 DB。"
+            }
+        },
+        {
+            "id": 5,
+            "type": "bullet_points",
+            "content": {
+                "title": "關鍵成果",
+                "points": [
+                    "查詢延遲下降 42%",
+                    "  - p95 由 2.3s → 1.3s",
+                    "  - 使用連線快取策略",
+                    "錯誤率下降至 0.4%",
+                    "覆蓋率提升至 85%"
+                ]
+            }
+        },
+        {
+            "id": 6,
+            "type": "code_demo",
+            "content": {
+                "title": "連線快取實作",
+                "language": "python",
+                "code": "@lru_cache(maxsize=32)\ndef get_conn(dsn: str) -> Connection:\n    return psycopg2.connect(dsn)"
+            }
+        },
+        {
+            "id": 7,
+            "type": "kpi_slide",
+            "content": {
+                "title": "核心指標",
+                "kpis": [
+                    {
+                        "label": "查詢延遲 p95",
+                        "value": "1.3",
+                        "unit": "s",
+                        "delta": "▼ 42%"
+                    },
+                    {
+                        "label": "錯誤率",
+                        "value": "0.4",
+                        "unit": "%",
+                        "delta": "▼ 1.8%"
+                    },
+                    {
+                        "label": "測試覆蓋率",
+                        "value": "85",
+                        "unit": "%",
+                        "delta": "▲ 12%"
+                    }
+                ]
+            }
+        },
+        {
+            "id": 8,
+            "type": "two_column",
+            "content": {
+                "title": "優勢 vs. 風險",
+                "left": {
+                    "heading": "優勢",
+                    "points": [
+                        "查詢延遲顯著下降",
+                        "架構解耦度提升",
+                        "可觀測性完善"
+                    ]
+                },
+                "right": {
+                    "heading": "風險",
+                    "points": [
+                        "LLM API 成本上升",
+                        "  - 需加強快取",
+                        "跨區資料一致性"
+                    ]
+                }
+            }
+        },
+        {
+            "id": 9,
+            "type": "table",
+            "content": {
+                "title": "版本里程碑",
+                "headers": [
+                    "版本",
+                    "日期",
+                    "主要功能",
+                    "狀態"
+                ],
+                "rows": [
+                    [
+                        "v1.0",
+                        "2026-01",
+                        "MVP 上線",
+                        "完成"
+                    ],
+                    [
+                        "v1.1",
+                        "2026-02",
+                        "連線快取",
+                        "完成"
+                    ],
+                    [
+                        "v1.2",
+                        "2026-03",
+                        "多租戶",
+                        "完成"
+                    ],
+                    [
+                        "v2.0",
+                        "2026-05",
+                        "LLM Routing",
+                        "進行中"
+                    ]
+                ]
+            }
+        },
+        {
+            "id": 10,
+            "type": "ending_slide",
+            "content": {
+                "title": "Thank You",
+                "sub_title": "Q & A"
+            }
+        }
+    ]
+}
