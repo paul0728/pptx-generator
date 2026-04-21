@@ -1,0 +1,52 @@
+title: 專案進度報告
+version: 2026-Q2
+
+slides:
+  - type: title_slide
+    title: 專案進度報告
+    sub_title: "Q2 2026 Review\n2026-04-21"
+
+  - type: outline_slide
+    title: 大綱
+    points:
+      - 1. 專案背景
+      - 2. 系統架構
+      - 3. 關鍵成果
+      - 4. 後續規劃
+
+  - type: section_slide
+    title: 系統架構
+    sub_title: 資料流與核心元件
+
+  - type: bullet_points
+    title: 關鍵成果
+    points:
+      - 查詢延遲下降 42%
+      - "  - p95 由 2.3s → 1.3s"
+      - "  - 使用連線快取策略"
+      - 錯誤率下降至 0.4%
+      - 覆蓋率提升至 85%
+
+  - type: code_demo
+    title: 連線快取實作
+    language: python
+    code: |
+      @lru_cache(maxsize=32)
+      def get_conn(dsn: str) -> Connection:
+          return psycopg2.connect(dsn)
+
+  - type: kpi_slide
+    title: 核心指標
+    kpis:
+      - label: 查詢延遲 p95
+        value: "1.3"
+        unit: s
+        delta: "▼ 42%"
+      - label: 錯誤率
+        value: "0.4"
+        unit: "%"
+        delta: "▼ 1.8%"
+
+  - type: ending_slide
+    title: Thank You
+    sub_title: Q & A

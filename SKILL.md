@@ -2,7 +2,7 @@
 name: pptx-generator
 description: >
   Generates corporate-compliant PPTX presentations from any report, document,
-  or structured content. Pipeline: outline planning → structured JSON →
+  or structured content. Pipeline: outline planning → structured data →
   Mermaid diagram rendering → python-pptx assembly → quality verification.
   Use this skill whenever the user wants to turn any text, report, analysis,
   meeting notes, or system document into a polished slide deck. Trigger even if
@@ -38,9 +38,74 @@ description: >
 | 輸出路徑 | 「存到 docs/report.pptx」 | `output_presentation.pptx` |
 | 品牌色 | 「用 #007A33」 | 有模板繼承模板；無模板用 `#2B579A` |
 | 字體 | 「用 Noto Sans TC」 | 中文 `微軟正黑體`，程式碼 `Consolas` |
-| 既有 slides.json | 「用這份 slides.json」 | 從 Phase 0 開始完整規劃 |
+| 既有投影片資料 | 「用這份 slides.json / .yaml / .md」 | 從 Phase 0 開始完整規劃 |
 
 **使用者不需要知道這些參數。** 直接說「幫我做簡報」就能跑。
+
+---
+
+## 支援的輸入格式
+
+本工具支援三種輸入格式，使用者可依習慣選擇：
+
+### 1. Markdown（最直覺）
+
+用 Markdown 撰寫投影片內容，工具自動轉換為簡報結構：
+
+```markdown
+---
+title: 專案進度報告
+version: 2026-Q2
+---
+
+# 專案進度報告
+Q2 2026 Review
+
+## 大綱
+- 專案背景
+- 系統架構
+- 關鍵成果
+
+## 關鍵成果
+- 查詢延遲下降 42%
+  - p95 由 2.3s → 1.3s
+- 錯誤率下降至 0.4%
+```
+
+Markdown 對應規則：
+- `# H1` → 封面（第一個）或章節分隔（後續）
+- `## H2` → 新投影片
+- 項目符號 → bullet_points
+- 程式碼區塊 → code_demo
+- `> 引用` → speaker notes
+
+### 2. YAML（可讀性佳）
+
+比 JSON 更易讀寫，支援扁平格式（不需要巢狀 `content`）：
+
+```yaml
+title: 專案進度報告
+version: 2026-Q2
+
+slides:
+  - type: title_slide
+    title: 專案進度報告
+    sub_title: Q2 2026 Review
+
+  - type: bullet_points
+    title: 關鍵成果
+    points:
+      - 查詢延遲下降 42%
+      - 錯誤率下降至 0.4%
+```
+
+> YAML 輸入需要安裝 PyYAML：`pip install pyyaml`
+
+### 3. JSON（完整控制）
+
+適合程式化生成或需要精確控制每個欄位的場景：
+
+- 範例 JSON：[assets/example-slides.json](assets/example-slides.json)
 
 ---
 
@@ -48,29 +113,49 @@ description: >
 
 ```
 Phase 0  規劃大綱
-Phase 1  內容解析 → slides.json
+Phase 1  內容解析 → slides data (JSON / YAML / Markdown)
 Phase 2  Mermaid 圖表渲染
 Phase 3  python-pptx 組裝
 Phase 4  品質驗證
 ```
 
-- 若使用者提供了 `slides.json`，跳過 Phase 0 和 Phase 1，直接進入 Phase 2。
+- 若使用者提供了投影片資料檔（JSON / YAML / Markdown），跳過 Phase 0 和 Phase 1，直接進入 Phase 2。
 - 參考腳本：[scripts/generate_pptx_template.py](scripts/generate_pptx_template.py)
-- 範例 JSON：[assets/example-slides.json](assets/example-slides.json)
-- 依賴：`python-pptx`、`requests`、`Pillow`
+- 範例檔案：[assets/example-slides.json](assets/example-slides.json) / [assets/example-slides.yaml](assets/example-slides.yaml) / [assets/example-slides.md](assets/example-slides.md)
+- 依賴：`python-pptx`、`requests`、`Pillow`（YAML 輸入另需 `pyyaml`）
 
 ### Quickstart
 
+**Windows (PowerShell):**
+```powershell
+pptx-generate --input slides.md --out output.pptx -v
+```
+
+**Linux / macOS:**
 ```bash
-python .skills/pptx-generator/scripts/generate_pptx_template.py \
-    --json slides.json \
-    [--template assets/default-template.pptx] \
-    [--out output.pptx] \
-    [--brand-color "#007A33"] [--font "Noto Sans TC"] \
-    [--footer "Company · Confidential"] [--version-label "2026-Q2 v1.2"] \
-    [--watermark "DRAFT"] [--page-numbers] \
+pptx-generate --input slides.md --out output.pptx -v
+```
+
+完整參數範例：
+
+**Windows (PowerShell):**
+```powershell
+pptx-generate --input slides.yaml --template assets/default-template.pptx --out output.pptx --brand-color "#007A33" --font "Noto Sans TC" --footer "Company · Confidential" --version-label "2026-Q2 v1.2" --watermark "DRAFT" --page-numbers -v
+```
+
+**Linux / macOS:**
+```bash
+pptx-generate \
+    --input slides.yaml \
+    --template assets/default-template.pptx \
+    --out output.pptx \
+    --brand-color "#007A33" --font "Noto Sans TC" \
+    --footer "Company · Confidential" --version-label "2026-Q2 v1.2" \
+    --watermark "DRAFT" --page-numbers \
     -v
 ```
+
+> `--json` 仍可使用（向後相容），但建議改用 `--input`。
 
 未指定 `--template` 時，優先使用 `assets/default-template.pptx`，不存在則用空白簡報。
 未指定 `--footer` / `--version-label` 時，會自動使用 `presentation_metadata.title` / `.version`。
@@ -87,7 +172,7 @@ python .skills/pptx-generator/scripts/generate_pptx_template.py \
 
 ---
 
-## Phase 1 — 內容解析 → JSON
+## Phase 1 — 內容解析 → 投影片資料
 
 ### slides.json Schema
 
@@ -153,7 +238,7 @@ python .skills/pptx-generator/scripts/generate_pptx_template.py \
 
 ### 內容量控制（防溢出的第一道防線）
 
-Phase 1 生成 JSON 時就必須控制每頁內容量。Phase 3 的 auto-fit 是第二道防線，不可作為主要依賴。
+Phase 1 生成資料時就必須控制每頁內容量。Phase 3 的 auto-fit 是第二道防線，不可作為主要依賴。
 
 | 類型 | 上限 | 超過時 |
 |------|------|--------|
@@ -307,7 +392,7 @@ code_demo 必須強制等寬字體 `Consolas`，透過 auto-fit 的 `is_code=Tru
 
 ### 3-E Speaker Notes
 
-若 slide JSON 中有 `notes` 欄位：
+若 slide 資料中有 `notes` 欄位：
 
 ```python
 if c.get("notes"):
@@ -401,6 +486,5 @@ else:
 
 - 只要求 **Markdown 大綱** 或 **純文字摘要**（沒提到簡報/投影片/PPT/deck）
 - 只問 **Mermaid 語法** 或 **python-pptx API**
-- 只要產生 **slides.json** 但明確說「不要 pptx」
+- 只要產生 **slides data** 但明確說「不要 pptx」
 - 只要求 **修改現有 .pptx 檔案的特定物件**（這個 skill 是從頭生成，不做 in-place 編輯）
-> "把 report.md 轉成客戶提案簡報，控制在 12 頁。"

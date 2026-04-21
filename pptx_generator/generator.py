@@ -30,6 +30,7 @@ from pathlib import Path
 from typing import Iterable
 
 import json
+
 import requests
 from PIL import Image as PILImage
 from pptx import Presentation
@@ -39,6 +40,7 @@ from pptx.enum.text import PP_ALIGN
 from pptx.util import Emu, Inches, Pt
 
 logger = logging.getLogger("pptx_generator")
+
 
 # ── Constants ─────────────────────────────────────────────────────────
 # Resolve asset directory: works both as installed package and as Kiro Skill.
@@ -88,7 +90,14 @@ LAYOUT_HINTS: dict[str, tuple[tuple[str, ...], int]] = {
     "title": (("Title Slide", "新版封面", "標題投影片", "封面"), 0),
     "bullet": (("Title and Content", "標題及內容", "一般", "內容"), 1),
     "section": (
-        ("Section Header", "章節標題", "章節", "單元封面", "單元封面(右)", "單元封面-綠底"),
+        (
+            "Section Header",
+            "章節標題",
+            "章節",
+            "單元封面",
+            "單元封面(右)",
+            "單元封面-綠底",
+        ),
         1,
     ),
     "diagram": (("Title and Content", "標題及內容", "一般"), 1),
@@ -161,11 +170,67 @@ class Slide:
 
 
 def load_slides(path: Path) -> tuple[list[Slide], dict]:
-    data = json.loads(path.read_text(encoding="utf-8"))
+    """Load slides from JSON, YAML, or Markdown based on file extension."""
+    suffix = path.suffix.lower()
+
+    if suffix in (".yaml", ".yml"):
+        data = _load_yaml(path)
+    elif suffix in (".md", ".markdown"):
+        data = _load_markdown(path)
+    else:
+        data = json.loads(path.read_text(encoding="utf-8"))
+
     if "slides" not in data or not isinstance(data["slides"], list):
         raise ValueError(f"{path}: missing 'slides' array")
     meta = data.get("presentation_metadata") or {}
     return [Slide.parse(s) for s in data["slides"]], meta
+
+
+def _load_yaml(path: Path) -> dict:
+    """Load a YAML slides file. Supports flat format (title/version at top level)."""
+    try:
+        import yaml
+    except ImportError as exc:
+        raise ImportError(
+            "PyYAML is required for YAML input. Install it with: pip install pyyaml"
+        ) from exc
+
+    raw = yaml.safe_load(path.read_text(encoding="utf-8"))
+    if not isinstance(raw, dict):
+        raise ValueError(f"{path}: YAML root must be a mapping")
+
+    # Support flat format: title/version at top level instead of nested presentation_metadata
+    if "presentation_metadata" not in raw and ("title" in raw or "version" in raw):
+        meta = {}
+        if "title" in raw:
+            meta["title"] = raw.pop("title")
+        if "version" in raw:
+            meta["version"] = raw.pop("version")
+        raw["presentation_metadata"] = meta
+
+    # Normalize flat slide format: {type, title, points, ...} → {type, content: {...}}
+    for s in raw.get("slides", []):
+        if "content" not in s and "type" in s:
+            stype = s["type"]
+            content: dict = {}
+            for key in list(s.keys()):
+                if key not in ("id", "type"):
+                    content[key] = s.pop(key)
+            s["content"] = content
+
+    # Auto-assign IDs if missing
+    for i, s in enumerate(raw.get("slides", []), start=1):
+        if "id" not in s:
+            s["id"] = i
+
+    return raw
+
+
+def _load_markdown(path: Path) -> dict:
+    """Load a Markdown file and convert to slides data."""
+    from .markdown_parser import parse_markdown_file
+
+    return parse_markdown_file(path)
 
 
 # ── Phase 2: Mermaid rendering ────────────────────────────────────────
@@ -181,7 +246,9 @@ def _strip_cjk_labels(mermaid: str) -> str:
 
     def repl(m: re.Match) -> str:
         label = m.group(1)
-        ascii_only = re.sub(r"[\u3000-\u9fff\uac00-\ud7af\uff00-\uffef]+", "Node", label).strip()
+        ascii_only = re.sub(
+            r"[\u3000-\u9fff\uac00-\ud7af\uff00-\uffef]+", "Node", label
+        ).strip()
         return f"[{ascii_only or 'Node'}]"
 
     return re.sub(r"\[([^\]]+)\]", repl, mermaid)
@@ -189,7 +256,9 @@ def _strip_cjk_labels(mermaid: str) -> str:
 
 def _count_mermaid_nodes(code: str) -> int:
     """Rough node count: unique tokens that start a node shape bracket."""
-    nodes = set(re.findall(r"(?:^|\s|-->|---|==>|-\.->)\s*([A-Za-z0-9_]+)\s*[\[\(\{]", code))
+    nodes = set(
+        re.findall(r"(?:^|\s|-->|---|==>|-\.->)\s*([A-Za-z0-9_]+)\s*[\[\(\{]", code)
+    )
     # Also count bare id references on the right of -->
     nodes |= set(re.findall(r"-->\s*([A-Za-z0-9_]+)\b", code))
     return len(nodes)
@@ -204,11 +273,15 @@ def _mermaid_request(mermaid_code: str) -> bytes:
             r = requests.get(url, timeout=MERMAID_TIMEOUT)
             r.raise_for_status()
             if len(r.content) < 200:
-                raise RuntimeError(f"suspiciously small response ({len(r.content)} bytes)")
+                raise RuntimeError(
+                    f"suspiciously small response ({len(r.content)} bytes)"
+                )
             return r.content
         except Exception as exc:  # noqa: BLE001 — retry regardless
             last_exc = exc
-            logger.debug("mermaid attempt %d/%d failed: %s", attempt, MERMAID_RETRIES, exc)
+            logger.debug(
+                "mermaid attempt %d/%d failed: %s", attempt, MERMAID_RETRIES, exc
+            )
     assert last_exc is not None
     raise last_exc
 
@@ -269,7 +342,9 @@ def render_all_diagrams(slides: list[Slide], tmp_dir: Path) -> dict[int, Path]:
     with ThreadPoolExecutor(max_workers=min(MERMAID_MAX_WORKERS, len(jobs))) as pool:
         futures = {
             pool.submit(
-                render_mermaid, next(s.content["mermaid_code"] for s in slides if s.id == sid), path
+                render_mermaid,
+                next(s.content["mermaid_code"] for s in slides if s.id == sid),
+                path,
             ): sid
             for sid, path in jobs.items()
         }
@@ -340,7 +415,9 @@ def _visual_width_in(text: str, pt: int) -> float:
     return total
 
 
-def auto_fit_text(shape, text: str, *, max_pt: int, min_pt: int, is_code: bool = False) -> None:
+def auto_fit_text(
+    shape, text: str, *, max_pt: int, min_pt: int, is_code: bool = False
+) -> None:
     """Insert text and shrink font until it fits. CJK-aware; forces Consolas for code."""
     shape.text = text
     if not text.strip():
@@ -385,7 +462,9 @@ def _set_placeholder_text(
 ) -> bool:
     ph = find_placeholder(slide, kinds=kinds, allow_any_body=allow_any_body)
     if ph is None:
-        logger.warning("placeholder not found (kinds=%s); text dropped: %r", kinds, text[:30])
+        logger.warning(
+            "placeholder not found (kinds=%s); text dropped: %r", kinds, text[:30]
+        )
         return False
     auto_fit_text(ph, text, max_pt=max_pt, min_pt=min_pt, is_code=is_code)
     return True
@@ -837,7 +916,9 @@ def build_kpi_slide(prs: Presentation, s: Slide, brand: BrandConfig) -> None:
             )
             d_box.text_frame.text = str(delta)
             is_down = str(delta).strip().startswith(("-", "▼", "↓"))
-            color = RGBColor(0xC0, 0x39, 0x2B) if is_down else RGBColor(0x2E, 0x8B, 0x57)
+            color = (
+                RGBColor(0xC0, 0x39, 0x2B) if is_down else RGBColor(0x2E, 0x8B, 0x57)
+            )
             for p in d_box.text_frame.paragraphs:
                 p.alignment = PP_ALIGN.CENTER
                 for run in p.runs:
@@ -981,7 +1062,9 @@ def strip_unused_picture_placeholders(slide) -> None:
             continue
         # If there's no image blip inside, treat as empty.
         has_image = bool(
-            ph._element.findall(".//{http://schemas.openxmlformats.org/drawingml/2006/main}blip")
+            ph._element.findall(
+                ".//{http://schemas.openxmlformats.org/drawingml/2006/main}blip"
+            )
         )
         if not has_image:
             to_remove.append(ph._element)
@@ -1096,9 +1179,20 @@ def generate(
 
 # ── CLI ───────────────────────────────────────────────────────────────
 def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="Generate PPTX from slides.json.")
-    p.add_argument("--json", required=True, type=Path, help="path to slides.json")
-    p.add_argument("--template", type=Path, default=None, help="optional .pptx template")
+    p = argparse.ArgumentParser(
+        description="Generate PPTX from slides data (JSON, YAML, or Markdown).",
+    )
+    p.add_argument(
+        "--input",
+        type=Path,
+        default=None,
+        help="path to slides file (.json / .yaml / .yml / .md)",
+    )
+    # Keep --json as alias for backward compatibility
+    p.add_argument("--json", type=Path, default=None, help=argparse.SUPPRESS)
+    p.add_argument(
+        "--template", type=Path, default=None, help="optional .pptx template"
+    )
     p.add_argument(
         "--out",
         type=Path,
@@ -1106,15 +1200,37 @@ def _parse_args(argv: list[str] | None = None) -> argparse.Namespace:
         help="output .pptx path (default: output_presentation.pptx)",
     )
     p.add_argument(
-        "--brand-color", default=DEFAULT_BRAND_COLOR, help="brand color hex, e.g. #007A33"
+        "--brand-color",
+        default=DEFAULT_BRAND_COLOR,
+        help="brand color hex, e.g. #007A33",
     )
-    p.add_argument("--font", default=None, help="override body/title font (e.g. 'Noto Sans TC')")
-    p.add_argument("--footer", default=None, help="footer text (default: metadata.title)")
-    p.add_argument("--version-label", default=None, help="version/date shown bottom-center")
-    p.add_argument("--watermark", default=None, help="diagonal watermark text (e.g. CONFIDENTIAL)")
-    p.add_argument("--page-numbers", action="store_true", help="show 'n / total' bottom-right")
-    p.add_argument("-v", "--verbose", action="count", default=0, help="-v = INFO, -vv = DEBUG")
-    return p.parse_args(argv)
+    p.add_argument(
+        "--font", default=None, help="override body/title font (e.g. 'Noto Sans TC')"
+    )
+    p.add_argument(
+        "--footer", default=None, help="footer text (default: metadata.title)"
+    )
+    p.add_argument(
+        "--version-label", default=None, help="version/date shown bottom-center"
+    )
+    p.add_argument(
+        "--watermark", default=None, help="diagonal watermark text (e.g. CONFIDENTIAL)"
+    )
+    p.add_argument(
+        "--page-numbers", action="store_true", help="show 'n / total' bottom-right"
+    )
+    p.add_argument(
+        "-v", "--verbose", action="count", default=0, help="-v = INFO, -vv = DEBUG"
+    )
+    args = p.parse_args(argv)
+
+    # Resolve --json as alias for --input (backward compatibility)
+    if args.input is None and args.json is not None:
+        args.input = args.json
+    if args.input is None:
+        p.error("--input is required (accepts .json, .yaml, .yml, or .md)")
+
+    return args
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -1136,12 +1252,15 @@ def main(argv: list[str] | None = None) -> int:
     )
 
     try:
-        generate(args.json, args.template, args.out, brand=brand)
+        generate(args.input, args.template, args.out, brand=brand)
     except FileNotFoundError as exc:
         logger.error("file not found: %s", exc)
         return 2
     except ValueError as exc:
         logger.error("invalid input: %s", exc)
+        return 2
+    except ImportError as exc:
+        logger.error("%s", exc)
         return 2
     return 0
 
