@@ -15,7 +15,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          fetch-depth: 2
+          fetch-depth: 0
 
       - name: Check if version changed
         id: version
@@ -41,10 +41,80 @@ jobs:
             echo "exists=false" >> "$GITHUB_OUTPUT"
           fi
 
+      - name: Generate changelog from commits
+        if: steps.version.outputs.changed == 'true' && steps.tag_check.outputs.exists == 'false'
+        id: changelog
+        run: |
+          PREV_TAG="v${{ steps.version.outputs.previous }}"
+          CURR_TAG="v${{ steps.version.outputs.current }}"
+
+          # Determine commit range: from previous tag (if exists) or all commits
+          if git rev-parse "$PREV_TAG" >/dev/null 2>&1; then
+            RANGE="${PREV_TAG}..HEAD"
+          else
+            RANGE="HEAD"
+          fi
+
+          # Collect commits by conventional commit type
+          FEATS=$(git log "$RANGE" --pretty=format:"%s" --grep="^feat" | sed 's/^feat[:(]//' | sed 's/^[^)]*) //' | sed 's/^: //')
+          FIXES=$(git log "$RANGE" --pretty=format:"%s" --grep="^fix" | sed 's/^fix[:(]//' | sed 's/^[^)]*) //' | sed 's/^: //')
+          REFACTORS=$(git log "$RANGE" --pretty=format:"%s" --grep="^refactor" | sed 's/^refactor[:(]//' | sed 's/^[^)]*) //' | sed 's/^: //')
+          CHORES=$(git log "$RANGE" --pretty=format:"%s" --grep="^chore" | sed 's/^chore[:(]//' | sed 's/^[^)]*) //' | sed 's/^: //')
+          OTHERS=$(git log "$RANGE" --pretty=format:"%s" | grep -v "^feat\|^fix\|^refactor\|^chore" || true)
+
+          # Build changelog body
+          BODY=""
+
+          if [ -n "$FEATS" ]; then
+            BODY="${BODY}## ✨ Features\n"
+            while IFS= read -r line; do
+              BODY="${BODY}- ${line}\n"
+            done <<< "$FEATS"
+            BODY="${BODY}\n"
+          fi
+
+          if [ -n "$FIXES" ]; then
+            BODY="${BODY}## 🐛 Bug Fixes\n"
+            while IFS= read -r line; do
+              BODY="${BODY}- ${line}\n"
+            done <<< "$FIXES"
+            BODY="${BODY}\n"
+          fi
+
+          if [ -n "$REFACTORS" ]; then
+            BODY="${BODY}## ♻️ Refactoring\n"
+            while IFS= read -r line; do
+              BODY="${BODY}- ${line}\n"
+            done <<< "$REFACTORS"
+            BODY="${BODY}\n"
+          fi
+
+          if [ -n "$CHORES" ]; then
+            BODY="${BODY}## 🔧 Chores\n"
+            while IFS= read -r line; do
+              BODY="${BODY}- ${line}\n"
+            done <<< "$CHORES"
+            BODY="${BODY}\n"
+          fi
+
+          if [ -n "$OTHERS" ]; then
+            BODY="${BODY}## 📝 Other Changes\n"
+            while IFS= read -r line; do
+              [ -n "$line" ] && BODY="${BODY}- ${line}\n"
+            done <<< "$OTHERS"
+            BODY="${BODY}\n"
+          fi
+
+          # Add install instruction
+          BODY="${BODY}## 📦 Install\n\`\`\`bash\npip install ai-pptx-generator==${CURR_TAG#v}\n\`\`\`\n"
+
+          # Write to file (handles multiline safely)
+          echo -e "$BODY" > /tmp/changelog.md
+
       - name: Create GitHub Release
         if: steps.version.outputs.changed == 'true' && steps.tag_check.outputs.exists == 'false'
         uses: softprops/action-gh-release@v2
         with:
           tag_name: v${{ steps.version.outputs.current }}
           name: v${{ steps.version.outputs.current }}
-          generate_release_notes: true
+          body_path: /tmp/changelog.md
