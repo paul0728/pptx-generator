@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "ai-pptx-generator"
-version = "0.2.0"
+version = "0.1.0"
 description = "將任何文件或報告轉換為企業級 PPTX 簡報 — Structured JSON → Mermaid diagrams → python-pptx assembly"
 readme = "README.md"
 license = "MIT"
