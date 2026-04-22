@@ -38,7 +38,9 @@ pip install -e ".[all]"
 
 ## 快速開始
 
-### 方式一：AI 自動產出（推薦）
+`--input` 支援三種格式：`.json`、`.md`、`.yaml`。
+
+### 方式一：AI 自動產出 JSON（推薦）
 
 1. 將 [`assets/prompt-template.md`](assets/prompt-template.md) 貼給任何 AI（ChatGPT、Claude、Gemini 等）
 2. 提供你的需求描述或原始內容
@@ -48,15 +50,61 @@ pip install -e ".[all]"
 pptx-generate --input slides.json --out output.pptx -v
 ```
 
-### 方式二：在 AI IDE 中使用
+樣板包含完整 schema、11 種投影片類型範例、內容量限制規則。範例：[`assets/example-slides.json`](assets/example-slides.json)
 
-安裝為 Skill 後，直接在聊天視窗說「幫我把這份會議記錄做成簡報」，AI 自動完成全部流程。
+### 方式二：手動撰寫 Markdown
 
-### 方式三：手動撰寫 Markdown
+````markdown
+---
+title: 專案進度報告
+version: 2026-Q2
+---
+
+# 專案進度報告
+Q2 2026 Review
+
+## 關鍵成果
+- 查詢延遲下降 42%
+  - p95 由 2.3s → 1.3s
+
+## 連線快取實作
+
+```python
+@lru_cache(maxsize=32)
+def get_conn(dsn): ...
+```
+````
 
 ```bash
 pptx-generate --input slides.md --out output.pptx -v
 ```
+
+| Markdown 語法 | 投影片類型 |
+|--------------|-----------|
+| `# H1`（第一個） | `title_slide`（封面） |
+| `# H1`（後續） | `section_slide`（章節分隔） |
+| `## H2` | 新投影片（`bullet_points` 或 `code_demo`） |
+| 項目符號 `-` / `*` | `bullet_points` |
+| 程式碼區塊 | `code_demo` |
+| `> 引用` | speaker notes |
+
+> Markdown 僅支援基本類型。需要 `kpi_slide`、`table`、`two_column` 等進階類型時，請用 JSON 或 YAML。
+
+完整範例：[`assets/example-slides.md`](assets/example-slides.md)
+
+### 方式三：YAML
+
+比 JSON 更易讀寫，支援扁平格式（不需要巢狀 `content`）。需安裝 PyYAML。
+
+```bash
+pptx-generate --input slides.yaml --out output.pptx -v
+```
+
+完整範例：[`assets/example-slides.yaml`](assets/example-slides.yaml)
+
+### 方式四：在 AI IDE 中使用
+
+安裝為 Skill 後，直接在聊天視窗說「幫我把這份會議記錄做成簡報」，AI 自動完成全部流程。詳見 [作為 AI Skill 使用](#作為-ai-skill-使用)。
 
 ---
 
@@ -94,62 +142,6 @@ pptx-generate \
 | `-v` / `-vv` | 詳細輸出 | WARNING |
 
 > `--json` 仍可使用（向後相容），建議改用 `--input`。
-
----
-
-## 輸入格式
-
-### JSON（推薦 — AI 自動產出）
-
-使用 [提示詞樣板](assets/prompt-template.md) 搭配任何 AI，自動產出符合規範的 `slides.json`。樣板包含完整 schema、11 種投影片類型範例、內容量限制規則。
-
-完整範例：[`assets/example-slides.json`](assets/example-slides.json)
-
-### Markdown（手動撰寫最直覺）
-
-用 Markdown 撰寫，工具自動轉換為簡報結構：
-
-````markdown
----
-title: 專案進度報告
-version: 2026-Q2
----
-
-# 專案進度報告
-Q2 2026 Review
-
-## 大綱
-- 專案背景
-- 系統架構
-
-## 關鍵成果
-- 查詢延遲下降 42%
-  - p95 由 2.3s → 1.3s
-
-## 連線快取實作
-
-```python
-@lru_cache(maxsize=32)
-def get_conn(dsn): ...
-```
-````
-
-| Markdown 語法 | 投影片類型 |
-|--------------|-----------|
-| `# H1`（第一個） | `title_slide`（封面） |
-| `# H1`（後續） | `section_slide`（章節分隔） |
-| `## H2` | 新投影片（`bullet_points` 或 `code_demo`） |
-| 項目符號 `-` / `*` | `bullet_points` |
-| 程式碼區塊 | `code_demo` |
-| `> 引用` | speaker notes |
-
-完整範例：[`assets/example-slides.md`](assets/example-slides.md)
-
-### YAML（可讀性佳）
-
-比 JSON 更易讀寫，支援扁平格式（不需要巢狀 `content`）。需安裝 PyYAML。
-
-完整範例：[`assets/example-slides.yaml`](assets/example-slides.yaml)
 
 ---
 

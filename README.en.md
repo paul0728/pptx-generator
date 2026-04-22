@@ -38,7 +38,9 @@ After installation, use `pptx-generate` command or `python -m pptx_generator`.
 
 ## Quick Start
 
-### Option 1: AI-generated (Recommended)
+`--input` supports three formats: `.json`, `.md`, `.yaml`.
+
+### Option 1: AI-generated JSON (Recommended)
 
 1. Paste [`assets/prompt-template.md`](assets/prompt-template.md) to any AI (ChatGPT, Claude, Gemini, etc.)
 2. Provide your source content (documents, reports, notes)
@@ -48,15 +50,61 @@ After installation, use `pptx-generate` command or `python -m pptx_generator`.
 pptx-generate --input slides.json --out output.pptx -v
 ```
 
-### Option 2: Use in AI IDE
+The template includes the complete schema, all 11 slide type examples, and content limit rules. Example: [`assets/example-slides.json`](assets/example-slides.json)
 
-Install as a Skill, then say "Make a presentation from these meeting notes" — AI handles the entire pipeline.
+### Option 2: Write Markdown manually
 
-### Option 3: Write Markdown manually
+````markdown
+---
+title: Project Progress Report
+version: 2026-Q2
+---
+
+# Project Progress Report
+Q2 2026 Review
+
+## Key Results
+- Query latency reduced by 42%
+  - p95 from 2.3s → 1.3s
+
+## Connection Cache
+
+```python
+@lru_cache(maxsize=32)
+def get_conn(dsn): ...
+```
+````
 
 ```bash
 pptx-generate --input slides.md --out output.pptx -v
 ```
+
+| Markdown Syntax | Slide Type |
+|----------------|------------|
+| `# H1` (first) | `title_slide` (cover) |
+| `# H1` (subsequent) | `section_slide` (section divider) |
+| `## H2` | New slide (`bullet_points` or `code_demo`) |
+| Bullet lists `-` / `*` | `bullet_points` |
+| Fenced code blocks | `code_demo` |
+| `> Blockquote` | speaker notes |
+
+> Markdown only supports basic types. For `kpi_slide`, `table`, `two_column` etc., use JSON or YAML.
+
+Full example: [`assets/example-slides.md`](assets/example-slides.md)
+
+### Option 3: YAML
+
+More readable than JSON, supports flat format (no nested `content` required). Requires PyYAML.
+
+```bash
+pptx-generate --input slides.yaml --out output.pptx -v
+```
+
+Full example: [`assets/example-slides.yaml`](assets/example-slides.yaml)
+
+### Option 4: Use in AI IDE
+
+Install as a Skill, then say "Make a presentation from these meeting notes" — AI handles the entire pipeline. See [Use as AI Skill](#use-as-ai-skill).
 
 ---
 
@@ -94,62 +142,6 @@ pptx-generate \
 | `-v` / `-vv` | Verbose output | WARNING |
 
 > `--json` still works (backward compatible), `--input` is recommended.
-
----
-
-## Input Formats
-
-### JSON (Recommended — AI-generated)
-
-Use the [prompt template](assets/prompt-template.md) with any AI to auto-generate a valid `slides.json`. The template includes the complete schema, all 11 slide type examples, and content limit rules.
-
-Full example: [`assets/example-slides.json`](assets/example-slides.json)
-
-### Markdown (Most intuitive for manual writing)
-
-Write slides in Markdown — the tool auto-converts to presentation structure:
-
-````markdown
----
-title: Project Progress Report
-version: 2026-Q2
----
-
-# Project Progress Report
-Q2 2026 Review
-
-## Outline
-- Background
-- Architecture
-
-## Key Results
-- Query latency reduced by 42%
-  - p95 from 2.3s → 1.3s
-
-## Connection Cache
-
-```python
-@lru_cache(maxsize=32)
-def get_conn(dsn): ...
-```
-````
-
-| Markdown Syntax | Slide Type |
-|----------------|------------|
-| `# H1` (first) | `title_slide` (cover) |
-| `# H1` (subsequent) | `section_slide` (section divider) |
-| `## H2` | New slide (`bullet_points` or `code_demo`) |
-| Bullet lists `-` / `*` | `bullet_points` |
-| Fenced code blocks | `code_demo` |
-| `> Blockquote` | speaker notes |
-
-Full example: [`assets/example-slides.md`](assets/example-slides.md)
-
-### YAML (Human-readable)
-
-More readable than JSON, supports flat format (no nested `content` required). Requires PyYAML.
-
-Full example: [`assets/example-slides.yaml`](assets/example-slides.yaml)
 
 ---
 
