@@ -359,15 +359,29 @@ print(data["slides"])  # pass to generate() or modify before generating
 
 This tool can be used as an AI IDE Skill. Once installed, the AI handles the entire flow from content analysis to PPTX generation.
 
-### Install via npx skills (Recommended)
+### Install the Skill
 
-One command to install the skill — supports 40+ AI agents (Claude Code, Cursor, Codex, Kiro, etc.):
+Choose the method based on your AI agent:
+
+**Kiro:**
+
+**Windows (PowerShell):**
+```powershell
+git clone https://github.com/paul0728/pptx-generator.git .kiro/skills/pptx-generator
+```
+
+**Linux / macOS:**
+```bash
+git clone https://github.com/paul0728/pptx-generator.git .kiro/skills/pptx-generator
+```
+
+**Claude Code / Cursor / Codex and other agents:**
+
+Use [`npx skills`](https://github.com/vercel-labs/skills) for one-command install (supports 40+ AI agents):
 
 ```bash
 npx skills add paul0728/pptx-generator
 ```
-
-> [`npx skills`](https://github.com/vercel-labs/skills) automatically installs to the correct directory for your AI agent.
 
 Common commands:
 
@@ -377,6 +391,8 @@ npx skills list                            # List installed skills
 npx skills update                          # Update all skills
 npx skills remove pptx-generator           # Remove skill
 ```
+
+> `npx skills` installs to project-level by default (e.g. `.claude/skills/`, `.agents/skills/`). Add `-g` for global install.
 
 Then install Python dependencies:
 
@@ -400,19 +416,19 @@ git clone https://github.com/paul0728/pptx-generator.git .skills/pptx-generator
 
 ```
 your-project/
-├── .skills/
+├── .kiro/skills/                    ← Kiro
 │   └── pptx-generator/
-│       ├── SKILL.md                 ← AI reads this to understand capabilities
+│       ├── SKILL.md
 │       ├── assets/
 │       │   ├── default-template.pptx
-│       │   ├── prompt-template.md   ← Prompt template for AI-driven generation
-│       │   ├── example-slides.json
-│       │   ├── example-slides.yaml
-│       │   └── example-slides.md
+│       │   ├── prompt-template.md
+│       │   └── example-slides.*
 │       ├── scripts/
-│       │   └── generate_pptx_template.py
 │       └── pptx_generator/
-│           └── ...
+│
+├── .claude/skills/                  ← Claude Code (created by npx skills)
+│   └── pptx-generator/
+│       └── ...
 ├── src/
 └── ...
 ```

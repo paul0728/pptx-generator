@@ -363,13 +363,27 @@ print(data["slides"])  # 可直接傳給 generate 或自行修改後再生成
 
 #### 步驟 1：下載 Skill 到專案
 
-**使用 npx skills（推薦，支援多種 AI agent）：**
+依你使用的 AI agent 選擇安裝方式：
+
+**Kiro：**
+
+**Windows (PowerShell):**
+```powershell
+git clone https://github.com/paul0728/pptx-generator.git .kiro/skills/pptx-generator
+```
+
+**Linux / macOS:**
+```bash
+git clone https://github.com/paul0728/pptx-generator.git .kiro/skills/pptx-generator
+```
+
+**Claude Code / Cursor / Codex 等其他 agent：**
+
+使用 [`npx skills`](https://github.com/vercel-labs/skills) 一鍵安裝（支援 40+ 種 AI agent）：
 
 ```bash
 npx skills add paul0728/pptx-generator
 ```
-
-> [`npx skills`](https://github.com/vercel-labs/skills) 支援 Claude Code、Cursor、Codex、Kiro 等 40+ 種 AI agent，自動安裝到對應目錄。
 
 常用指令：
 
@@ -380,35 +394,25 @@ npx skills update                          # 更新所有 skills
 npx skills remove pptx-generator           # 移除 skill
 ```
 
-**或使用 git clone：**
-
-**Windows (PowerShell):**
-```powershell
-git clone https://github.com/paul0728/pptx-generator.git .skills/pptx-generator
-```
-
-**Linux / macOS:**
-```bash
-git clone https://github.com/paul0728/pptx-generator.git .skills/pptx-generator
-```
+> `npx skills` 預設安裝到 project-level（如 `.claude/skills/`、`.agents/skills/`）。加 `-g` 可安裝為全域 skill。
 
 最終目錄結構應為：
 
 ```
 your-project/
-├── .skills/
+├── .kiro/skills/                    ← Kiro
 │   └── pptx-generator/
-│       ├── SKILL.md                 ← AI 讀取此檔案理解能力
+│       ├── SKILL.md
 │       ├── assets/
 │       │   ├── default-template.pptx
-│       │   ├── prompt-template.md   ← AI 提示詞樣板
-│       │   ├── example-slides.json
-│       │   ├── example-slides.yaml
-│       │   └── example-slides.md
+│       │   ├── prompt-template.md
+│       │   └── example-slides.*
 │       ├── scripts/
-│       │   └── generate_pptx_template.py
-│       └── pptx_generator/          ← Python 套件
-│           └── ...
+│       └── pptx_generator/
+│
+├── .claude/skills/                  ← Claude Code（npx skills 自動建立）
+│   └── pptx-generator/
+│       └── ...
 ├── src/
 └── ...
 ```
