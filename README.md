@@ -4,6 +4,8 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
+繁體中文 | [English](README.en.md)
+
 將任何文件、報告或結構化內容轉換為企業級 PPTX 簡報。
 
 **推薦用法：** 把你的內容 + [提示詞樣板](assets/prompt-template.md) 一起餵給 AI → AI 自動產出 `slides.json` → 工具生成 PPTX。不需要手寫任何投影片資料。
@@ -309,12 +311,6 @@ slides:
 
 完整範例：[`assets/example-slides.yaml`](assets/example-slides.yaml)
 
-### JSON（完整控制）
-
-適合程式化生成或需要精確控制每個欄位的場景。
-
-完整範例：[`assets/example-slides.json`](assets/example-slides.json)
-
 ---
 
 ## Python API
@@ -365,7 +361,23 @@ print(data["slides"])  # 可直接傳給 generate 或自行修改後再生成
 
 ### 安裝步驟
 
-#### 步驟 1：Clone 到專案的 `.skills/` 目錄
+#### 步驟 1：下載 Skill 到專案的 `.skills/` 目錄
+
+**使用 npx（推薦，一行搞定）：**
+
+**Windows (PowerShell):**
+```powershell
+npx degit paul0728/pptx-generator .skills/pptx-generator
+```
+
+**Linux / macOS:**
+```bash
+npx degit paul0728/pptx-generator .skills/pptx-generator
+```
+
+> `npx degit` 會下載 repo 最新版本，不含 `.git` 歷史，乾淨輕量。需要 Node.js 環境。
+
+**或使用 git clone：**
 
 **Windows (PowerShell):**
 ```powershell
@@ -375,20 +387,6 @@ git clone https://github.com/paul0728/pptx-generator.git .skills/pptx-generator
 **Linux / macOS:**
 ```bash
 git clone https://github.com/paul0728/pptx-generator.git .skills/pptx-generator
-```
-
-或者手動複製：
-
-**Windows (PowerShell):**
-```powershell
-New-Item -ItemType Directory -Path .skills\pptx-generator -Force
-Copy-Item -Recurse path\to\pptx-generator\* .skills\pptx-generator\
-```
-
-**Linux / macOS:**
-```bash
-mkdir -p .skills/pptx-generator
-cp -r /path/to/pptx-generator/* .skills/pptx-generator/
 ```
 
 最終目錄結構應為：
@@ -398,14 +396,14 @@ your-project/
 ├── .skills/
 │   └── pptx-generator/
 │       ├── SKILL.md                 ← AI 讀取此檔案理解能力
-│       ├── scripts/
-│       │   └── generate_pptx_template.py
 │       ├── assets/
 │       │   ├── default-template.pptx
-│       │   ├── example-output.pptx
+│       │   ├── prompt-template.md   ← AI 提示詞樣板
 │       │   ├── example-slides.json
 │       │   ├── example-slides.yaml
 │       │   └── example-slides.md
+│       ├── scripts/
+│       │   └── generate_pptx_template.py
 │       └── pptx_generator/          ← Python 套件
 │           └── ...
 ├── src/
@@ -534,7 +532,8 @@ pptx-generator/
 ├── requirements.txt
 ├── MANIFEST.in
 ├── LICENSE
-└── README.md
+├── README.md                         # 繁體中文
+└── README.en.md                      # English
 ```
 
 ---
