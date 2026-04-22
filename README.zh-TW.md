@@ -181,7 +181,16 @@ print(data["slides"])  # 可傳給 generate() 或自行修改
 **Kiro：**
 
 ```bash
+# Linux / macOS
 git clone --depth 1 https://github.com/paul0728/pptx-generator.git .kiro/skills/pptx-generator
+cd .kiro/skills/pptx-generator && rm -rf .git .github .gitattributes .gitignore LICENSE MANIFEST.in pyproject.toml README.md README.zh-TW.md requirements.txt && cd -
+pip install python-pptx requests Pillow
+```
+
+```powershell
+# Windows (PowerShell)
+git clone --depth 1 https://github.com/paul0728/pptx-generator.git .kiro/skills/pptx-generator
+Remove-Item -Force .kiro/skills/pptx-generator/.git, .kiro/skills/pptx-generator/.github, .kiro/skills/pptx-generator/.gitattributes, .kiro/skills/pptx-generator/.gitignore, .kiro/skills/pptx-generator/LICENSE, .kiro/skills/pptx-generator/MANIFEST.in, .kiro/skills/pptx-generator/pyproject.toml, .kiro/skills/pptx-generator/README.md, .kiro/skills/pptx-generator/README.zh-TW.md, .kiro/skills/pptx-generator/requirements.txt -Recurse -ErrorAction SilentlyContinue
 pip install python-pptx requests Pillow
 ```
 
