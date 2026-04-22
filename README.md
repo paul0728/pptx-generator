@@ -4,70 +4,70 @@
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-繁體中文 | [English](README.en.md)
+English | [繁體中文](README.zh-TW.md)
 
-將任何文件、報告或結構化內容轉換為企業級 PPTX 簡報。
+Convert any document, report, or structured content into corporate-grade PPTX presentations.
 
-**推薦用法：** 把你的內容 + [提示詞樣板](assets/prompt-template.md) 餵給 AI → AI 產出 `slides.json` → 工具生成 PPTX。不需要手寫任何投影片資料。
+**Recommended workflow:** Feed your content + the [prompt template](assets/prompt-template.md) to any AI → AI generates `slides.json` → tool produces PPTX. No manual slide data required.
 
-也可作為 AI IDE Skill，直接說「幫我做簡報」就能自動完成全部流程。
+Also works as an AI IDE Skill — just say "make me a presentation" and the AI handles everything.
 
 ---
 
-## 安裝
+## Installation
 
 ```bash
-# 從 PyPI（推薦）
+# From PyPI (recommended)
 pip install ai-pptx-generator
 
-# 含 YAML 支援
+# With YAML support
 pip install "ai-pptx-generator[yaml]"
 
-# 從 GitHub
+# From GitHub
 pip install git+https://github.com/paul0728/pptx-generator.git
 
-# 開發模式
+# Development mode
 git clone https://github.com/paul0728/pptx-generator.git
 cd pptx-generator
 pip install -e ".[all]"
 ```
 
-安裝後可使用 `pptx-generate` 指令或 `python -m pptx_generator`。
+After installation, use `pptx-generate` command or `python -m pptx_generator`.
 
 ---
 
-## 快速開始
+## Quick Start
 
-`--input` 支援三種格式：`.json`、`.md`、`.yaml`。
+`--input` supports three formats: `.json`, `.md`, `.yaml`.
 
-### 方式一：AI 自動產出 JSON（推薦）
+### Option 1: AI-generated JSON (Recommended)
 
-1. 將 [`assets/prompt-template.md`](assets/prompt-template.md) 貼給任何 AI（ChatGPT、Claude、Gemini 等）
-2. 提供你的需求描述或原始內容
-3. AI 產出 `slides.json`，存檔後執行：
+1. Paste [`assets/prompt-template.md`](assets/prompt-template.md) to any AI (ChatGPT, Claude, Gemini, etc.)
+2. Provide your source content (documents, reports, notes)
+3. AI generates `slides.json` — save and run:
 
 ```bash
 pptx-generate --input slides.json --out output.pptx -v
 ```
 
-樣板包含完整 schema、11 種投影片類型範例、內容量限制規則。範例：[`assets/example-slides.json`](assets/example-slides.json)
+The template includes the complete schema, all 11 slide type examples, and content limit rules. Example: [`assets/example-slides.json`](assets/example-slides.json)
 
-### 方式二：手動撰寫 Markdown
+### Option 2: Write Markdown manually
 
 ````markdown
 ---
-title: 專案進度報告
+title: Project Progress Report
 version: 2026-Q2
 ---
 
-# 專案進度報告
+# Project Progress Report
 Q2 2026 Review
 
-## 關鍵成果
-- 查詢延遲下降 42%
-  - p95 由 2.3s → 1.3s
+## Key Results
+- Query latency reduced by 42%
+  - p95 from 2.3s → 1.3s
 
-## 連線快取實作
+## Connection Cache
 
 ```python
 @lru_cache(maxsize=32)
@@ -79,42 +79,42 @@ def get_conn(dsn): ...
 pptx-generate --input slides.md --out output.pptx -v
 ```
 
-| Markdown 語法 | 投影片類型 |
-|--------------|-----------|
-| `# H1`（第一個） | `title_slide`（封面） |
-| `# H1`（後續） | `section_slide`（章節分隔） |
-| `## H2` | 新投影片（`bullet_points` 或 `code_demo`） |
-| 項目符號 `-` / `*` | `bullet_points` |
-| 程式碼區塊 | `code_demo` |
-| `> 引用` | speaker notes |
+| Markdown Syntax | Slide Type |
+|----------------|------------|
+| `# H1` (first) | `title_slide` (cover) |
+| `# H1` (subsequent) | `section_slide` (section divider) |
+| `## H2` | New slide (`bullet_points` or `code_demo`) |
+| Bullet lists `-` / `*` | `bullet_points` |
+| Fenced code blocks | `code_demo` |
+| `> Blockquote` | speaker notes |
 
-> Markdown 僅支援基本類型。需要 `kpi_slide`、`table`、`two_column` 等進階類型時，請用 JSON 或 YAML。
+> Markdown only supports basic types. For `kpi_slide`, `table`, `two_column` etc., use JSON or YAML.
 
-完整範例：[`assets/example-slides.md`](assets/example-slides.md)
+Full example: [`assets/example-slides.md`](assets/example-slides.md)
 
-### 方式三：YAML
+### Option 3: YAML
 
-比 JSON 更易讀寫，支援扁平格式（不需要巢狀 `content`）。需安裝 PyYAML。
+More readable than JSON, supports flat format (no nested `content` required). Requires PyYAML.
 
 ```bash
 pptx-generate --input slides.yaml --out output.pptx -v
 ```
 
-完整範例：[`assets/example-slides.yaml`](assets/example-slides.yaml)
+Full example: [`assets/example-slides.yaml`](assets/example-slides.yaml)
 
-### 方式四：在 AI IDE 中使用
+### Option 4: Use in AI IDE
 
-安裝為 Skill 後，直接在聊天視窗說「幫我把這份會議記錄做成簡報」，AI 自動完成全部流程。詳見 [作為 AI Skill 使用](#作為-ai-skill-使用)。
+Install as a Skill, then say "Make a presentation from these meeting notes" — AI handles the entire pipeline. See [Use as AI Skill](#use-as-ai-skill).
 
 ---
 
-## CLI 使用方式
+## CLI Usage
 
 ```bash
-# 基本用法（支援 .json / .yaml / .md）
+# Basic (supports .json / .yaml / .md)
 pptx-generate --input slides.md --out output.pptx -v
 
-# 完整參數（Linux / macOS 可用 \ 換行，Windows 請寫成一行）
+# Full parameters (use \ for line breaks on Linux/macOS; single line on Windows)
 pptx-generate \
     --input slides.yaml \
     --template my-template.pptx \
@@ -128,20 +128,20 @@ pptx-generate \
     -v
 ```
 
-| 參數 | 說明 | 預設值 |
-|------|------|--------|
-| `--input` | 投影片資料路徑 `.json` / `.yaml` / `.md`（必要） | — |
-| `--template` | .pptx 模板路徑 | 內建 `default-template.pptx` |
-| `--out` | 輸出路徑 | `output_presentation.pptx` |
-| `--brand-color` | 品牌色 HEX | `#2B579A` |
-| `--font` | 覆蓋字體 | 微軟正黑體 / Calibri |
-| `--footer` | 頁腳文字 | metadata.title |
-| `--version-label` | 版本標籤（底部中央） | metadata.version |
-| `--watermark` | 浮水印文字 | — |
-| `--page-numbers` | 顯示頁碼 | 關閉 |
-| `-v` / `-vv` | 詳細輸出 | WARNING |
+| Parameter | Description | Default |
+|-----------|-------------|---------|
+| `--input` | Slide data path `.json` / `.yaml` / `.md` (required) | — |
+| `--template` | .pptx template path | Built-in `default-template.pptx` |
+| `--out` | Output path | `output_presentation.pptx` |
+| `--brand-color` | Brand color HEX | `#2B579A` |
+| `--font` | Override font | Microsoft JhengHei / Calibri |
+| `--footer` | Footer text | metadata.title |
+| `--version-label` | Version label (bottom center) | metadata.version |
+| `--watermark` | Watermark text | — |
+| `--page-numbers` | Show page numbers | Off |
+| `-v` / `-vv` | Verbose output | WARNING |
 
-> `--json` 仍可使用（向後相容），建議改用 `--input`。
+> `--json` still works (backward compatible), `--input` is recommended.
 
 ---
 
@@ -154,8 +154,8 @@ from pptx_generator import generate, BrandConfig
 brand = BrandConfig(color="#007A33", font="Noto Sans TC", footer="My Company", page_numbers=True)
 
 output = generate(
-    json_path=Path("slides.md"),       # 支援 .json / .yaml / .md
-    template_path=None,                 # None = 使用內建模板
+    json_path=Path("slides.md"),       # supports .json / .yaml / .md
+    template_path=None,                 # None = built-in template
     output_path=Path("output.pptx"),
     brand=brand,
 )
@@ -165,42 +165,42 @@ output = generate(
 from pptx_generator import parse_markdown
 
 data = parse_markdown("# Title\nSubtitle\n\n## Key Points\n- Point 1\n- Point 2")
-print(data["slides"])  # 可傳給 generate() 或自行修改
+print(data["slides"])  # pass to generate() or modify first
 ```
 
 ---
 
-## 作為 AI Skill 使用
+## Use as AI Skill
 
-安裝後，AI 可自動完成從內容分析到 PPTX 生成的完整流程（Phase 0–4）。
+Once installed, the AI handles the entire flow from content analysis to PPTX generation (Phase 0–4).
 
-### 安裝 Skill
+### Install the Skill
 
-依你使用的 AI agent 選擇：
+Choose based on your AI agent:
 
-**Kiro：**
+**Kiro:**
 
 ```bash
 git clone https://github.com/paul0728/pptx-generator.git .kiro/skills/pptx-generator
 pip install python-pptx requests Pillow
 ```
 
-**Claude Code / Cursor / Codex 等（40+ agents）：**
+**Claude Code / Cursor / Codex etc. (40+ agents):**
 
 ```bash
 npx skills add paul0728/pptx-generator
 pip install python-pptx requests Pillow
 ```
 
-> [`npx skills`](https://github.com/vercel-labs/skills) 預設安裝到 project-level（如 `.claude/skills/`）。加 `-g` 為全域安裝。
+> [`npx skills`](https://github.com/vercel-labs/skills) installs to project-level by default (e.g. `.claude/skills/`). Add `-g` for global install.
 
 ```bash
-npx skills list                            # 列出已安裝 skills
-npx skills update                          # 更新所有 skills
-npx skills remove pptx-generator           # 移除 skill
+npx skills list                            # List installed skills
+npx skills update                          # Update all skills
+npx skills remove pptx-generator           # Remove skill
 ```
 
-### 安裝後的目錄結構
+### Directory structure after install
 
 ```
 your-project/
@@ -209,70 +209,70 @@ your-project/
 │   ├── assets/
 │   └── pptx_generator/
 │
-├── .claude/skills/pptx-generator/   ← Claude Code（npx skills 建立）
+├── .claude/skills/pptx-generator/   ← Claude Code (via npx skills)
 │   └── ...
 ```
 
-### 觸發方式
+### Trigger phrases
 
-| 語言 | 範例 |
-|------|------|
-| 中文 | 「幫我做簡報」「把這份文件轉成投影片」 |
-| 英文 | "Make a PPT" "Convert this to slides" |
-| 進階 | 「套用 ./template.pptx，品牌色 #007A33，控制在 12 頁」 |
+| Language | Examples |
+|----------|----------|
+| Chinese | 「幫我做簡報」「把這份文件轉成投影片」 |
+| English | "Make a PPT" "Convert this to slides" |
+| Advanced | "Apply ./template.pptx, brand color #007A33, keep under 12 slides" |
 
 ---
 
-## 投影片類型
+## Slide Types
 
-| type | 用途 | content 欄位 |
-|------|------|-------------|
-| `title_slide` | 封面（第 1 頁） | `title`, `sub_title` |
-| `outline_slide` | 大綱（第 2 頁） | `title`, `points[]` |
-| `section_slide` | 章節分隔 | `title`, `sub_title` |
-| `bullet_points` | 條列內容 | `title`, `points[]` |
-| `architecture_diagram` | Mermaid 架構圖 | `title`, `mermaid_code`, `description` |
-| `code_demo` | 程式碼展示 | `title`, `code`, `language` |
-| `two_column` | 左右對比 | `title`, `left{heading, points}`, `right{heading, points}` |
-| `table` | 資料表格 | `title`, `headers[]`, `rows[][]` |
-| `image_slide` | 圖片 + 說明 | `title`, `image_path`, `caption` |
-| `kpi_slide` | KPI 卡片（≤6） | `title`, `kpis[{label, value, unit, delta}]` |
-| `ending_slide` | 結尾頁 | `title`, `sub_title` |
+| Type | Purpose | Content Fields |
+|------|---------|---------------|
+| `title_slide` | Cover (slide 1) | `title`, `sub_title` |
+| `outline_slide` | Table of contents (slide 2) | `title`, `points[]` |
+| `section_slide` | Section divider | `title`, `sub_title` |
+| `bullet_points` | Bullet list | `title`, `points[]` |
+| `architecture_diagram` | Mermaid diagram | `title`, `mermaid_code`, `description` |
+| `code_demo` | Code display | `title`, `code`, `language` |
+| `two_column` | Side-by-side comparison | `title`, `left{heading, points}`, `right{heading, points}` |
+| `table` | Data table | `title`, `headers[]`, `rows[][]` |
+| `image_slide` | Image + caption | `title`, `image_path`, `caption` |
+| `kpi_slide` | KPI cards (≤6) | `title`, `kpis[{label, value, unit, delta}]` |
+| `ending_slide` | Closing slide | `title`, `sub_title` |
 
 ---
 
 ## Pipeline
 
 ```
-Phase 0  規劃大綱（AI 根據 prompt-template.md 自動執行）
-Phase 1  內容解析 → slides.json（AI 產出 / 使用者提供）
-Phase 2  Mermaid 圖表平行渲染（快取 + CJK fallback）
-Phase 3  python-pptx 組裝（Layout 查找 → auto-fit → 品牌 chrome）
-Phase 4  品質驗證
+Phase 0  Outline planning (AI auto-executes using prompt-template.md)
+Phase 1  Content analysis → slides.json (AI-generated / user-provided)
+Phase 2  Mermaid diagram parallel rendering (cache + CJK fallback)
+Phase 3  python-pptx assembly (layout lookup → auto-fit → brand chrome)
+Phase 4  Quality verification
 ```
 
 ---
 
-## 專案結構
+## Project Structure
 
 ```
 pptx-generator/
-├── pptx_generator/              # Python 套件
-│   ├── generator.py             # 核心邏輯
+├── pptx_generator/              # Python package
+│   ├── generator.py             # Core logic
 │   ├── markdown_parser.py       # Markdown → slides
-│   └── assets/                  # 內建模板 + 範例
-├── assets/                      # 範例與資源檔
-│   ├── prompt-template.md       # AI 提示詞樣板（核心）
-│   ├── example-slides.*         # JSON / YAML / MD 範例
+│   └── assets/                  # Built-in template + examples
+├── assets/                      # Examples & resources
+│   ├── prompt-template.md       # AI prompt template (core)
+│   ├── example-slides.*         # JSON / YAML / MD examples
 │   └── default-template.pptx
-├── SKILL.md                     # AI Skill 定義
+├── SKILL.md                     # AI Skill definition
 ├── pyproject.toml
-├── README.md                    # 繁體中文
-└── README.en.md                 # English
+├── README.md                    # English
+└── README.zh-TW.md             # 繁體中文
 ```
 
 ---
 
 ## License
 
-MIT — 詳見 [LICENSE](LICENSE)。
+MIT — see [LICENSE](LICENSE).
