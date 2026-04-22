@@ -14,6 +14,28 @@ Also works as an AI IDE Skill — just say "make me a presentation" and the AI h
 
 ---
 
+## Installation
+
+```bash
+# From PyPI (recommended)
+pip install ai-pptx-generator
+
+# With YAML support
+pip install "ai-pptx-generator[yaml]"
+
+# From GitHub
+pip install git+https://github.com/paul0728/pptx-generator.git
+
+# Development mode
+git clone https://github.com/paul0728/pptx-generator.git
+cd pptx-generator
+pip install -e ".[all]"
+```
+
+After installation, use `pptx-generate` command or `python -m pptx_generator`.
+
+---
+
 ## Quick Start
 
 ### Option 1: AI-generated (Recommended)
@@ -35,28 +57,6 @@ Install as a Skill, then say "Make a presentation from these meeting notes" — 
 ```bash
 pptx-generate --input slides.md --out output.pptx -v
 ```
-
----
-
-## Installation
-
-```bash
-# From PyPI (recommended)
-pip install ai-pptx-generator
-
-# With YAML support
-pip install "ai-pptx-generator[yaml]"
-
-# From GitHub
-pip install git+https://github.com/paul0728/pptx-generator.git
-
-# Development mode
-git clone https://github.com/paul0728/pptx-generator.git
-cd pptx-generator
-pip install -e ".[all]"
-```
-
-After installation, use `pptx-generate` command or `python -m pptx_generator`.
 
 ---
 

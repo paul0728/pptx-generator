@@ -14,6 +14,28 @@
 
 ---
 
+## 安裝
+
+```bash
+# 從 PyPI（推薦）
+pip install ai-pptx-generator
+
+# 含 YAML 支援
+pip install "ai-pptx-generator[yaml]"
+
+# 從 GitHub
+pip install git+https://github.com/paul0728/pptx-generator.git
+
+# 開發模式
+git clone https://github.com/paul0728/pptx-generator.git
+cd pptx-generator
+pip install -e ".[all]"
+```
+
+安裝後可使用 `pptx-generate` 指令或 `python -m pptx_generator`。
+
+---
+
 ## 快速開始
 
 ### 方式一：AI 自動產出（推薦）
@@ -35,28 +57,6 @@ pptx-generate --input slides.json --out output.pptx -v
 ```bash
 pptx-generate --input slides.md --out output.pptx -v
 ```
-
----
-
-## 安裝
-
-```bash
-# 從 PyPI（推薦）
-pip install ai-pptx-generator
-
-# 含 YAML 支援
-pip install "ai-pptx-generator[yaml]"
-
-# 從 GitHub
-pip install git+https://github.com/paul0728/pptx-generator.git
-
-# 開發模式
-git clone https://github.com/paul0728/pptx-generator.git
-cd pptx-generator
-pip install -e ".[all]"
-```
-
-安裝後可使用 `pptx-generate` 指令或 `python -m pptx_generator`。
 
 ---
 
