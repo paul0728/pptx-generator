@@ -1,6 +1,6 @@
 # PPTX Generator
 
-[![PyPI version](https://badge.fury.io/py/ai-pptx-generator.svg)](https://pypi.org/project/ai-pptx-generator/)
+[![PyPI version](https://img.shields.io/pypi/v/ai-pptx-generator)](https://pypi.org/project/ai-pptx-generator/)
 [![Python 3.10+](https://img.shields.io/badge/python-3.10%2B-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
