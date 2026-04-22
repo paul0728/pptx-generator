@@ -14,69 +14,23 @@ Also works as an AI IDE Skill — just say "make me a presentation" and the AI h
 
 ---
 
-## Table of Contents
-
-- [Features](#features)
-- [Quick Start](#quick-start)
-- [Installation](#installation)
-- [CLI Usage](#cli-usage)
-- [Input Formats](#input-formats)
-- [Python API](#python-api)
-- [Use as AI Skill](#use-as-ai-skill)
-- [Slide Types](#slide-types)
-- [Pipeline](#pipeline)
-- [Project Structure](#project-structure)
-- [License](#license)
-
----
-
-## Features
-
-- **AI-driven**: Includes a [prompt template](assets/prompt-template.md) that works with any AI to auto-generate slide data
-- **3 input formats**: JSON (AI-generated / full control), Markdown (most intuitive for manual writing), YAML (human-readable)
-- **11 slide types**: Title, Outline, Section, Bullets, Architecture Diagram, Code, Two-Column, Table, Image, KPI Cards, Ending
-- **Mermaid diagram rendering**: Automatically converts Mermaid syntax to high-resolution PNG embedded in slides
-- **CJK-aware auto-fit**: Mixed Chinese/English content auto-scales fonts to prevent overflow
-- **Brand customization**: Brand color, custom fonts, footer, page numbers, watermark
-- **Template support**: Apply custom `.pptx` templates with automatic layout detection
-- **Quality verification**: Post-generation check ensures every slide has visible content
-
----
-
 ## Quick Start
 
 ### Option 1: AI-generated (Recommended)
 
-The easiest approach — no manual slide data needed:
+1. Paste [`assets/prompt-template.md`](assets/prompt-template.md) to any AI (ChatGPT, Claude, Gemini, etc.)
+2. Provide your source content (documents, reports, notes)
+3. AI generates `slides.json` — save and run:
 
-1. Paste the content of [`assets/prompt-template.md`](assets/prompt-template.md) to any AI (ChatGPT, Claude, Gemini, etc.)
-2. Provide your source content (documents, reports, notes, verbal instructions)
-3. AI generates a `slides.json`
-4. Save and run:
-
-**Windows (PowerShell):**
-```powershell
-pptx-generate --input slides.json --out output.pptx -v
-```
-
-**Linux / macOS:**
 ```bash
 pptx-generate --input slides.json --out output.pptx -v
 ```
 
-### Option 2: Use in AI IDE (Simplest)
+### Option 2: Use in AI IDE
 
-After installing as an AI Skill, just say in the chat:
-
-```
-Make a presentation from these meeting notes
-```
-
-The AI handles the entire pipeline (outline → slides.json → PPTX).
+Install as a Skill, then say "Make a presentation from these meeting notes" — AI handles the entire pipeline.
 
 ### Option 3: Write Markdown manually
-
-If you prefer full control, write slides in Markdown:
 
 ```bash
 pptx-generate --input slides.md --out output.pptx -v
@@ -86,53 +40,17 @@ pptx-generate --input slides.md --out output.pptx -v
 
 ## Installation
 
-### Option 1: From PyPI (Recommended)
-
-**Windows (PowerShell):**
-```powershell
+```bash
+# From PyPI (recommended)
 pip install ai-pptx-generator
-```
 
-**Linux / macOS:**
-```bash
-pip install ai-pptx-generator
-```
-
-For YAML input support:
-
-**Windows (PowerShell):**
-```powershell
+# With YAML support
 pip install "ai-pptx-generator[yaml]"
-```
 
-**Linux / macOS:**
-```bash
-pip install "ai-pptx-generator[yaml]"
-```
-
-### Option 2: From GitHub
-
-**Windows (PowerShell):**
-```powershell
+# From GitHub
 pip install git+https://github.com/paul0728/pptx-generator.git
-```
 
-**Linux / macOS:**
-```bash
-pip install git+https://github.com/paul0728/pptx-generator.git
-```
-
-### Option 3: Development mode
-
-**Windows (PowerShell):**
-```powershell
-git clone https://github.com/paul0728/pptx-generator.git
-cd pptx-generator
-pip install -e ".[all]"
-```
-
-**Linux / macOS:**
-```bash
+# Development mode
 git clone https://github.com/paul0728/pptx-generator.git
 cd pptx-generator
 pip install -e ".[all]"
@@ -144,53 +62,11 @@ After installation, use `pptx-generate` command or `python -m pptx_generator`.
 
 ## CLI Usage
 
-### Basic — Generate from Markdown
-
-**Windows (PowerShell):**
-```powershell
+```bash
+# Basic (supports .json / .yaml / .md)
 pptx-generate --input slides.md --out output.pptx -v
-```
 
-**Linux / macOS:**
-```bash
-pptx-generate --input slides.md --out output.pptx -v
-```
-
-### Generate from YAML
-
-**Windows (PowerShell):**
-```powershell
-pptx-generate --input slides.yaml --out output.pptx -v
-```
-
-**Linux / macOS:**
-```bash
-pptx-generate --input slides.yaml --out output.pptx -v
-```
-
-### Generate from JSON
-
-**Windows (PowerShell):**
-```powershell
-pptx-generate --input slides.json --out output.pptx -v
-```
-
-**Linux / macOS:**
-```bash
-pptx-generate --input slides.json --out output.pptx -v
-```
-
-> `--json slides.json` still works (backward compatible), but `--input` is recommended.
-
-### Full parameters
-
-**Windows (PowerShell):**
-```powershell
-pptx-generate --input slides.yaml --template my-template.pptx --out report.pptx --brand-color "#007A33" --font "Noto Sans TC" --footer "Company · Confidential" --version-label "2026-Q2 v1.2" --watermark "DRAFT" --page-numbers -v
-```
-
-**Linux / macOS:**
-```bash
+# Full parameters (use \ for line breaks on Linux/macOS; single line on Windows)
 pptx-generate \
     --input slides.yaml \
     --template my-template.pptx \
@@ -206,16 +82,18 @@ pptx-generate \
 
 | Parameter | Description | Default |
 |-----------|-------------|---------|
-| `--input` | Slide data path (`.json` / `.yaml` / `.yml` / `.md`) (required) | — |
+| `--input` | Slide data path `.json` / `.yaml` / `.md` (required) | — |
 | `--template` | .pptx template path | Built-in `default-template.pptx` |
-| `--out` | Output file path | `output_presentation.pptx` |
+| `--out` | Output path | `output_presentation.pptx` |
 | `--brand-color` | Brand color HEX | `#2B579A` |
 | `--font` | Override font | Microsoft JhengHei / Calibri |
 | `--footer` | Footer text | metadata.title |
 | `--version-label` | Version label (bottom center) | metadata.version |
 | `--watermark` | Watermark text | — |
 | `--page-numbers` | Show page numbers | Off |
-| `-v` / `-vv` | Verbose output (INFO / DEBUG) | WARNING |
+| `-v` / `-vv` | Verbose output | WARNING |
+
+> `--json` still works (backward compatible), `--input` is recommended.
 
 ---
 
@@ -223,15 +101,13 @@ pptx-generate \
 
 ### JSON (Recommended — AI-generated)
 
-Use the [prompt template (prompt-template.md)](assets/prompt-template.md) with any AI to auto-generate a valid `slides.json`.
-
-The template includes the complete schema, examples for all 11 slide types, and content limit rules. Just provide your raw content and the AI produces ready-to-use JSON.
+Use the [prompt template](assets/prompt-template.md) with any AI to auto-generate a valid `slides.json`. The template includes the complete schema, all 11 slide type examples, and content limit rules.
 
 Full example: [`assets/example-slides.json`](assets/example-slides.json)
 
 ### Markdown (Most intuitive for manual writing)
 
-Write slide content in Markdown — the tool auto-converts to presentation structure. No special format to learn.
+Write slides in Markdown — the tool auto-converts to presentation structure:
 
 ````markdown
 ---
@@ -245,14 +121,10 @@ Q2 2026 Review
 ## Outline
 - Background
 - Architecture
-- Key Results
-
-# Architecture
 
 ## Key Results
 - Query latency reduced by 42%
   - p95 from 2.3s → 1.3s
-- Error rate down to 0.4%
 
 ## Connection Cache
 
@@ -260,54 +132,22 @@ Q2 2026 Review
 @lru_cache(maxsize=32)
 def get_conn(dsn): ...
 ```
-
-## Thank You
-Q & A
 ````
-
-**Markdown mapping rules:**
 
 | Markdown Syntax | Slide Type |
 |----------------|------------|
 | `# H1` (first) | `title_slide` (cover) |
 | `# H1` (subsequent) | `section_slide` (section divider) |
 | `## H2` | New slide (`bullet_points` or `code_demo`) |
-| Bullet lists `-` / `*` | `bullet_points` points |
+| Bullet lists `-` / `*` | `bullet_points` |
 | Fenced code blocks | `code_demo` |
 | `> Blockquote` | speaker notes |
-| YAML front matter | `presentation_metadata` |
 
 Full example: [`assets/example-slides.md`](assets/example-slides.md)
 
 ### YAML (Human-readable)
 
-More readable than JSON, supports flat format (no nested `content` required):
-
-```yaml
-title: Project Progress Report
-version: 2026-Q2
-
-slides:
-  - type: title_slide
-    title: Project Progress Report
-    sub_title: "Q2 2026 Review\n2026-04-21"
-
-  - type: bullet_points
-    title: Key Results
-    points:
-      - Query latency reduced by 42%
-      - Error rate down to 0.4%
-
-  - type: code_demo
-    title: Connection Cache
-    language: python
-    code: |
-      @lru_cache(maxsize=32)
-      def get_conn(dsn: str) -> Connection:
-          return psycopg2.connect(dsn)
-```
-
-> YAML input requires PyYAML: `pip install pyyaml` or `pip install "ai-pptx-generator[yaml]"`
+More readable than JSON, supports flat format (no nested `content` required). Requires PyYAML.
 
 Full example: [`assets/example-slides.yaml`](assets/example-slides.yaml)
 
@@ -319,146 +159,75 @@ Full example: [`assets/example-slides.yaml`](assets/example-slides.yaml)
 from pathlib import Path
 from pptx_generator import generate, BrandConfig
 
-brand = BrandConfig(
-    color="#007A33",
-    font="Noto Sans TC",
-    footer="My Company",
-    page_numbers=True,
-)
+brand = BrandConfig(color="#007A33", font="Noto Sans TC", footer="My Company", page_numbers=True)
 
-# Supports .json / .yaml / .md input
 output = generate(
-    json_path=Path("slides.md"),      # or slides.yaml / slides.json
-    template_path=None,                # use built-in template
+    json_path=Path("slides.md"),       # supports .json / .yaml / .md
+    template_path=None,                 # None = built-in template
     output_path=Path("output.pptx"),
     brand=brand,
 )
-print(f"Presentation generated: {output}")
 ```
-
-### Markdown Parsing API
 
 ```python
 from pptx_generator import parse_markdown
 
-data = parse_markdown("""
-# My Presentation
-Subtitle here
-
-## Key Points
-- Point 1
-- Point 2
-""")
-
-print(data["slides"])  # pass to generate() or modify before generating
+data = parse_markdown("# Title\nSubtitle\n\n## Key Points\n- Point 1\n- Point 2")
+print(data["slides"])  # pass to generate() or modify first
 ```
 
 ---
 
 ## Use as AI Skill
 
-This tool can be used as an AI IDE Skill. Once installed, the AI handles the entire flow from content analysis to PPTX generation.
+Once installed, the AI handles the entire flow from content analysis to PPTX generation (Phase 0–4).
 
 ### Install the Skill
 
-Choose the method based on your AI agent:
+Choose based on your AI agent:
 
 **Kiro:**
 
-**Windows (PowerShell):**
-```powershell
-git clone https://github.com/paul0728/pptx-generator.git .kiro/skills/pptx-generator
-```
-
-**Linux / macOS:**
 ```bash
 git clone https://github.com/paul0728/pptx-generator.git .kiro/skills/pptx-generator
+pip install python-pptx requests Pillow
 ```
 
-**Claude Code / Cursor / Codex and other agents:**
-
-Use [`npx skills`](https://github.com/vercel-labs/skills) for one-command install (supports 40+ AI agents):
+**Claude Code / Cursor / Codex etc. (40+ agents):**
 
 ```bash
 npx skills add paul0728/pptx-generator
+pip install python-pptx requests Pillow
 ```
 
-Common commands:
+> [`npx skills`](https://github.com/vercel-labs/skills) installs to project-level by default (e.g. `.claude/skills/`). Add `-g` for global install.
 
 ```bash
-npx skills add paul0728/pptx-generator    # Install skill
 npx skills list                            # List installed skills
 npx skills update                          # Update all skills
 npx skills remove pptx-generator           # Remove skill
 ```
 
-> `npx skills` installs to project-level by default (e.g. `.claude/skills/`, `.agents/skills/`). Add `-g` for global install.
-
-Then install Python dependencies:
-
-```bash
-pip install python-pptx requests Pillow
-```
-
-### Install via git clone
-
-**Windows (PowerShell):**
-```powershell
-git clone https://github.com/paul0728/pptx-generator.git .skills/pptx-generator
-```
-
-**Linux / macOS:**
-```bash
-git clone https://github.com/paul0728/pptx-generator.git .skills/pptx-generator
-```
-
-### Expected directory structure
+### Directory structure after install
 
 ```
 your-project/
-├── .kiro/skills/                    ← Kiro
-│   └── pptx-generator/
-│       ├── SKILL.md
-│       ├── assets/
-│       │   ├── default-template.pptx
-│       │   ├── prompt-template.md
-│       │   └── example-slides.*
-│       ├── scripts/
-│       └── pptx_generator/
+├── .kiro/skills/pptx-generator/     ← Kiro
+│   ├── SKILL.md
+│   ├── assets/
+│   └── pptx_generator/
 │
-├── .claude/skills/                  ← Claude Code (created by npx skills)
-│   └── pptx-generator/
-│       └── ...
-├── src/
-└── ...
+├── .claude/skills/pptx-generator/   ← Claude Code (via npx skills)
+│   └── ...
 ```
-
-### Usage in AI IDE
-
-Just say in the chat:
-
-```
-Make a presentation from these meeting notes
-```
-
-The AI will automatically:
-1. Detect your intent → activate pptx-generator Skill
-2. Analyze content and plan outline (Phase 0)
-3. Generate structured slide data (Phase 1)
-4. Render Mermaid diagrams (Phase 2)
-5. Assemble PPTX file (Phase 3)
-6. Quality verification (Phase 4)
 
 ### Trigger phrases
 
 | Language | Examples |
 |----------|----------|
-| Chinese | 「幫我做簡報」「把這份文件轉成投影片」「做一份進度報告 PPT」 |
-| English | "Make a PPT" "Convert this to slides" "Generate a slide deck" |
-| With template | "Apply ./template.pptx and make slides" |
-| With style | "KPI dashboard style, brand color #007A33" |
-| With page limit | "Keep it under 12 slides" |
-| With audience | "Executive summary for the boss" |
+| Chinese | 「幫我做簡報」「把這份文件轉成投影片」 |
+| English | "Make a PPT" "Convert this to slides" |
+| Advanced | "Apply ./template.pptx, brand color #007A33, keep under 12 slides" |
 
 ---
 
@@ -484,8 +253,8 @@ The AI will automatically:
 
 ```
 Phase 0  Outline planning (AI auto-executes using prompt-template.md)
-Phase 1  Content analysis → slides.json (AI-generated, or user-provided JSON / YAML / Markdown)
-Phase 2  Mermaid diagram parallel rendering (with cache & CJK fallback)
+Phase 1  Content analysis → slides.json (AI-generated / user-provided)
+Phase 2  Mermaid diagram parallel rendering (cache + CJK fallback)
 Phase 3  python-pptx assembly (layout lookup → auto-fit → brand chrome)
 Phase 4  Quality verification
 ```
@@ -496,34 +265,22 @@ Phase 4  Quality verification
 
 ```
 pptx-generator/
-├── pptx_generator/                  # Python package (pip install)
-│   ├── __init__.py
-│   ├── __main__.py                  # python -m pptx_generator
-│   ├── generator.py                 # Core logic
-│   ├── markdown_parser.py           # Markdown → slides conversion
-│   └── assets/
-│       ├── default-template.pptx
-│       └── example-slides.json
-├── scripts/
-│   └── generate_pptx_template.py    # Skill entry point (backward compat)
-├── assets/                           # Examples & resources
-│   ├── default-template.pptx
-│   ├── example-output.pptx
-│   ├── example-slides.json
-│   ├── example-slides.yaml
-│   ├── example-slides.md
-│   └── prompt-template.md            # AI prompt template (core)
-├── SKILL.md                          # AI Skill definition
-├── pyproject.toml                    # PyPI package config
-├── requirements.txt
-├── MANIFEST.in
-├── LICENSE
-├── README.md                         # 繁體中文
-└── README.en.md                      # English
+├── pptx_generator/              # Python package
+│   ├── generator.py             # Core logic
+│   ├── markdown_parser.py       # Markdown → slides
+│   └── assets/                  # Built-in template + examples
+├── assets/                      # Examples & resources
+│   ├── prompt-template.md       # AI prompt template (core)
+│   ├── example-slides.*         # JSON / YAML / MD examples
+│   └── default-template.pptx
+├── SKILL.md                     # AI Skill definition
+├── pyproject.toml
+├── README.md                    # 繁體中文
+└── README.en.md                 # English
 ```
 
 ---
 
 ## License
 
-MIT License — see [LICENSE](LICENSE).
+MIT — see [LICENSE](LICENSE).

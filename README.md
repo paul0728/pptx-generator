@@ -8,38 +8,9 @@
 
 將任何文件、報告或結構化內容轉換為企業級 PPTX 簡報。
 
-**推薦用法：** 把你的內容 + [提示詞樣板](assets/prompt-template.md) 一起餵給 AI → AI 自動產出 `slides.json` → 工具生成 PPTX。不需要手寫任何投影片資料。
+**推薦用法：** 把你的內容 + [提示詞樣板](assets/prompt-template.md) 餵給 AI → AI 產出 `slides.json` → 工具生成 PPTX。不需要手寫任何投影片資料。
 
-也可作為 AI IDE Skill 使用，直接說「幫我做簡報」就能自動完成全部流程。
-
----
-
-## 目錄
-
-- [功能特色](#功能特色)
-- [快速開始](#快速開始)
-- [安裝方式](#安裝方式)
-- [CLI 使用方式](#cli-使用方式)
-- [輸入格式](#輸入格式)
-- [Python API](#python-api)
-- [作為 AI Skill 使用](#作為-ai-skill-使用)
-- [投影片類型](#投影片類型)
-- [Pipeline 流程](#pipeline-流程)
-- [專案結構](#專案結構)
-- [License](#license)
-
----
-
-## 功能特色
-
-- **AI 驅動**：提供[提示詞樣板](assets/prompt-template.md)，搭配任何 AI 自動產出投影片資料
-- **三種輸入格式**：JSON（AI 產出 / 完整控制）、Markdown（手寫最直覺）、YAML（可讀性佳）
-- **11 種投影片類型**：封面、大綱、章節、條列、架構圖、程式碼、雙欄對比、表格、圖片、KPI 卡片、結尾
-- **Mermaid 圖表渲染**：自動將 Mermaid 語法轉為高解析度 PNG 嵌入投影片
-- **CJK 感知自動排版**：中英文混合內容自動縮放字體，確保不溢出
-- **品牌客製化**：支援品牌色、自訂字體、頁腳、頁碼、浮水印
-- **模板支援**：可套用自訂 `.pptx` 模板，自動偵測 Layout
-- **品質驗證**：生成後自動檢查每頁是否有可見內容
+也可作為 AI IDE Skill，直接說「幫我做簡報」就能自動完成全部流程。
 
 ---
 
@@ -47,36 +18,19 @@
 
 ### 方式一：AI 自動產出（推薦）
 
-最簡單的用法 — 不需要手寫任何投影片資料：
+1. 將 [`assets/prompt-template.md`](assets/prompt-template.md) 貼給任何 AI（ChatGPT、Claude、Gemini 等）
+2. 提供你的需求描述或原始內容
+3. AI 產出 `slides.json`，存檔後執行：
 
-1. 將 [`assets/prompt-template.md`](assets/prompt-template.md) 的內容貼給任何 AI（ChatGPT、Claude、Gemini 等）
-2. 接著提供你的需求描述或原始內容（文件、報告、筆記皆可）
-3. AI 會產出一份 `slides.json`
-4. 存檔後執行：
-
-**Windows (PowerShell):**
-```powershell
-pptx-generate --input slides.json --out output.pptx -v
-```
-
-**Linux / macOS:**
 ```bash
 pptx-generate --input slides.json --out output.pptx -v
 ```
 
-### 方式二：在 AI IDE 中使用（最簡單）
+### 方式二：在 AI IDE 中使用
 
-安裝為 AI Skill 後，直接在聊天視窗說：
-
-```
-幫我把這份會議記錄做成簡報
-```
-
-AI 會自動完成全部流程（規劃大綱 → 產出 slides.json → 生成 PPTX）。
+安裝為 Skill 後，直接在聊天視窗說「幫我把這份會議記錄做成簡報」，AI 自動完成全部流程。
 
 ### 方式三：手動撰寫 Markdown
-
-如果你偏好自己控制內容，可以用 Markdown 撰寫：
 
 ```bash
 pptx-generate --input slides.md --out output.pptx -v
@@ -84,113 +38,35 @@ pptx-generate --input slides.md --out output.pptx -v
 
 ---
 
-## 安裝方式
+## 安裝
 
-### 方式一：從 PyPI 安裝（推薦）
-
-**Windows (PowerShell):**
-```powershell
+```bash
+# 從 PyPI（推薦）
 pip install ai-pptx-generator
-```
 
-**Linux / macOS:**
-```bash
-pip install ai-pptx-generator
-```
-
-如需 YAML 輸入支援：
-
-**Windows (PowerShell):**
-```powershell
+# 含 YAML 支援
 pip install "ai-pptx-generator[yaml]"
-```
 
-**Linux / macOS:**
-```bash
-pip install "ai-pptx-generator[yaml]"
-```
-
-### 方式二：從 GitHub 安裝
-
-**Windows (PowerShell):**
-```powershell
+# 從 GitHub
 pip install git+https://github.com/paul0728/pptx-generator.git
-```
 
-**Linux / macOS:**
-```bash
-pip install git+https://github.com/paul0728/pptx-generator.git
-```
-
-### 方式三：開發模式安裝
-
-**Windows (PowerShell):**
-```powershell
+# 開發模式
 git clone https://github.com/paul0728/pptx-generator.git
 cd pptx-generator
 pip install -e ".[all]"
 ```
 
-**Linux / macOS:**
-```bash
-git clone https://github.com/paul0728/pptx-generator.git
-cd pptx-generator
-pip install -e ".[all]"
-```
-
-安裝後即可使用 `pptx-generate` 指令，或 `python -m pptx_generator`。
+安裝後可使用 `pptx-generate` 指令或 `python -m pptx_generator`。
 
 ---
 
 ## CLI 使用方式
 
-### 基本用法 — 從 Markdown 生成
-
-**Windows (PowerShell):**
-```powershell
+```bash
+# 基本用法（支援 .json / .yaml / .md）
 pptx-generate --input slides.md --out output.pptx -v
-```
 
-**Linux / macOS:**
-```bash
-pptx-generate --input slides.md --out output.pptx -v
-```
-
-### 從 YAML 生成
-
-**Windows (PowerShell):**
-```powershell
-pptx-generate --input slides.yaml --out output.pptx -v
-```
-
-**Linux / macOS:**
-```bash
-pptx-generate --input slides.yaml --out output.pptx -v
-```
-
-### 從 JSON 生成（向後相容）
-
-**Windows (PowerShell):**
-```powershell
-pptx-generate --input slides.json --out output.pptx -v
-```
-
-**Linux / macOS:**
-```bash
-pptx-generate --input slides.json --out output.pptx -v
-```
-
-> `--json slides.json` 仍可使用（向後相容），但建議改用 `--input`。
-
-### 完整參數
-
-**Windows (PowerShell):**
-```powershell
-pptx-generate --input slides.yaml --template my-template.pptx --out report.pptx --brand-color "#007A33" --font "Noto Sans TC" --footer "Company · Confidential" --version-label "2026-Q2 v1.2" --watermark "DRAFT" --page-numbers -v
-```
-
-**Linux / macOS:**
-```bash
+# 完整參數（Linux / macOS 可用 \ 換行，Windows 請寫成一行）
 pptx-generate \
     --input slides.yaml \
     --template my-template.pptx \
@@ -206,16 +82,18 @@ pptx-generate \
 
 | 參數 | 說明 | 預設值 |
 |------|------|--------|
-| `--input` | 投影片資料路徑（`.json` / `.yaml` / `.yml` / `.md`）（必要） | — |
+| `--input` | 投影片資料路徑 `.json` / `.yaml` / `.md`（必要） | — |
 | `--template` | .pptx 模板路徑 | 內建 `default-template.pptx` |
-| `--out` | 輸出檔案路徑 | `output_presentation.pptx` |
+| `--out` | 輸出路徑 | `output_presentation.pptx` |
 | `--brand-color` | 品牌色 HEX | `#2B579A` |
 | `--font` | 覆蓋字體 | 微軟正黑體 / Calibri |
 | `--footer` | 頁腳文字 | metadata.title |
 | `--version-label` | 版本標籤（底部中央） | metadata.version |
 | `--watermark` | 浮水印文字 | — |
 | `--page-numbers` | 顯示頁碼 | 關閉 |
-| `-v` / `-vv` | 詳細輸出 (INFO / DEBUG) | WARNING |
+| `-v` / `-vv` | 詳細輸出 | WARNING |
+
+> `--json` 仍可使用（向後相容），建議改用 `--input`。
 
 ---
 
@@ -223,15 +101,13 @@ pptx-generate \
 
 ### JSON（推薦 — AI 自動產出）
 
-使用 [提示詞樣板 (prompt-template.md)](assets/prompt-template.md) 搭配任何 AI，自動產出符合規範的 `slides.json`。
-
-樣板包含完整的 schema、所有 11 種投影片類型範例、內容量限制規則。使用者只需要提供原始內容，AI 就能產出可直接使用的 JSON。
+使用 [提示詞樣板](assets/prompt-template.md) 搭配任何 AI，自動產出符合規範的 `slides.json`。樣板包含完整 schema、11 種投影片類型範例、內容量限制規則。
 
 完整範例：[`assets/example-slides.json`](assets/example-slides.json)
 
 ### Markdown（手動撰寫最直覺）
 
-用 Markdown 撰寫投影片內容，工具自動轉換為簡報結構。不需要學任何特殊格式。
+用 Markdown 撰寫，工具自動轉換為簡報結構：
 
 ````markdown
 ---
@@ -245,14 +121,10 @@ Q2 2026 Review
 ## 大綱
 - 專案背景
 - 系統架構
-- 關鍵成果
-
-# 系統架構
 
 ## 關鍵成果
 - 查詢延遲下降 42%
   - p95 由 2.3s → 1.3s
-- 錯誤率下降至 0.4%
 
 ## 連線快取實作
 
@@ -260,54 +132,22 @@ Q2 2026 Review
 @lru_cache(maxsize=32)
 def get_conn(dsn): ...
 ```
-
-## Thank You
-Q & A
 ````
-
-**Markdown 對應規則：**
 
 | Markdown 語法 | 投影片類型 |
 |--------------|-----------|
 | `# H1`（第一個） | `title_slide`（封面） |
 | `# H1`（後續） | `section_slide`（章節分隔） |
 | `## H2` | 新投影片（`bullet_points` 或 `code_demo`） |
-| 項目符號 `-` / `*` | `bullet_points` 的 points |
+| 項目符號 `-` / `*` | `bullet_points` |
 | 程式碼區塊 | `code_demo` |
 | `> 引用` | speaker notes |
-| YAML front matter | `presentation_metadata` |
 
 完整範例：[`assets/example-slides.md`](assets/example-slides.md)
 
 ### YAML（可讀性佳）
 
-比 JSON 更易讀寫，支援扁平格式（不需要巢狀 `content`）：
-
-```yaml
-title: 專案進度報告
-version: 2026-Q2
-
-slides:
-  - type: title_slide
-    title: 專案進度報告
-    sub_title: "Q2 2026 Review\n2026-04-21"
-
-  - type: bullet_points
-    title: 關鍵成果
-    points:
-      - 查詢延遲下降 42%
-      - 錯誤率下降至 0.4%
-
-  - type: code_demo
-    title: 連線快取實作
-    language: python
-    code: |
-      @lru_cache(maxsize=32)
-      def get_conn(dsn: str) -> Connection:
-          return psycopg2.connect(dsn)
-```
-
-> YAML 輸入需要安裝 PyYAML：`pip install pyyaml` 或 `pip install "ai-pptx-generator[yaml]"`
+比 JSON 更易讀寫，支援扁平格式（不需要巢狀 `content`）。需安裝 PyYAML。
 
 完整範例：[`assets/example-slides.yaml`](assets/example-slides.yaml)
 
@@ -319,167 +159,75 @@ slides:
 from pathlib import Path
 from pptx_generator import generate, BrandConfig
 
-brand = BrandConfig(
-    color="#007A33",
-    font="Noto Sans TC",
-    footer="My Company",
-    page_numbers=True,
-)
+brand = BrandConfig(color="#007A33", font="Noto Sans TC", footer="My Company", page_numbers=True)
 
-# 支援 .json / .yaml / .md 輸入
 output = generate(
-    json_path=Path("slides.md"),      # 或 slides.yaml / slides.json
-    template_path=None,                # 使用內建模板
+    json_path=Path("slides.md"),       # 支援 .json / .yaml / .md
+    template_path=None,                 # None = 使用內建模板
     output_path=Path("output.pptx"),
     brand=brand,
 )
-print(f"簡報已生成：{output}")
 ```
-
-### Markdown 解析 API
 
 ```python
 from pptx_generator import parse_markdown
 
-data = parse_markdown("""
-# My Presentation
-Subtitle here
-
-## Key Points
-- Point 1
-- Point 2
-""")
-
-print(data["slides"])  # 可直接傳給 generate 或自行修改後再生成
+data = parse_markdown("# Title\nSubtitle\n\n## Key Points\n- Point 1\n- Point 2")
+print(data["slides"])  # 可傳給 generate() 或自行修改
 ```
 
 ---
 
 ## 作為 AI Skill 使用
 
-本工具可作為 AI IDE 的 Skill 使用。安裝後，AI 可自動完成從內容分析到 PPTX 生成的完整流程。
+安裝後，AI 可自動完成從內容分析到 PPTX 生成的完整流程（Phase 0–4）。
 
-### 安裝步驟
+### 安裝 Skill
 
-#### 步驟 1：下載 Skill 到專案
-
-依你使用的 AI agent 選擇安裝方式：
+依你使用的 AI agent 選擇：
 
 **Kiro：**
 
-**Windows (PowerShell):**
-```powershell
-git clone https://github.com/paul0728/pptx-generator.git .kiro/skills/pptx-generator
-```
-
-**Linux / macOS:**
 ```bash
 git clone https://github.com/paul0728/pptx-generator.git .kiro/skills/pptx-generator
+pip install python-pptx requests Pillow
 ```
 
-**Claude Code / Cursor / Codex 等其他 agent：**
-
-使用 [`npx skills`](https://github.com/vercel-labs/skills) 一鍵安裝（支援 40+ 種 AI agent）：
+**Claude Code / Cursor / Codex 等（40+ agents）：**
 
 ```bash
 npx skills add paul0728/pptx-generator
+pip install python-pptx requests Pillow
 ```
 
-常用指令：
+> [`npx skills`](https://github.com/vercel-labs/skills) 預設安裝到 project-level（如 `.claude/skills/`）。加 `-g` 為全域安裝。
 
 ```bash
-npx skills add paul0728/pptx-generator    # 安裝 skill
-npx skills list                            # 列出已安裝的 skills
+npx skills list                            # 列出已安裝 skills
 npx skills update                          # 更新所有 skills
 npx skills remove pptx-generator           # 移除 skill
 ```
 
-> `npx skills` 預設安裝到 project-level（如 `.claude/skills/`、`.agents/skills/`）。加 `-g` 可安裝為全域 skill。
-
-最終目錄結構應為：
+### 安裝後的目錄結構
 
 ```
 your-project/
-├── .kiro/skills/                    ← Kiro
-│   └── pptx-generator/
-│       ├── SKILL.md
-│       ├── assets/
-│       │   ├── default-template.pptx
-│       │   ├── prompt-template.md
-│       │   └── example-slides.*
-│       ├── scripts/
-│       └── pptx_generator/
+├── .kiro/skills/pptx-generator/     ← Kiro
+│   ├── SKILL.md
+│   ├── assets/
+│   └── pptx_generator/
 │
-├── .claude/skills/                  ← Claude Code（npx skills 自動建立）
-│   └── pptx-generator/
-│       └── ...
-├── src/
-└── ...
+├── .claude/skills/pptx-generator/   ← Claude Code（npx skills 建立）
+│   └── ...
 ```
-
-#### 步驟 2：安裝 Python 依賴
-
-**Windows (PowerShell):**
-```powershell
-pip install python-pptx requests Pillow
-```
-
-**Linux / macOS:**
-```bash
-pip install python-pptx requests Pillow
-```
-
-或者直接安裝套件（依賴會自動安裝）：
-
-**Windows (PowerShell):**
-```powershell
-pip install ai-pptx-generator
-```
-
-**Linux / macOS:**
-```bash
-pip install ai-pptx-generator
-```
-
-#### 步驟 3：在 AI IDE 中使用
-
-在聊天視窗中直接說：
-
-```
-幫我把這份會議記錄做成簡報
-```
-
-AI 會自動：
-1. 辨識到你要做簡報 → 啟動 pptx-generator Skill
-2. 分析你的內容，規劃大綱（Phase 0）
-3. 生成結構化的投影片資料（Phase 1）
-4. 渲染 Mermaid 圖表（Phase 2）
-5. 組裝 PPTX 檔案（Phase 3）
-6. 品質驗證（Phase 4）
 
 ### 觸發方式
 
-以下任何說法都會自動觸發此 Skill：
-
 | 語言 | 範例 |
 |------|------|
-| 中文 | 「幫我做簡報」「把這份文件轉成投影片」「做一份進度報告 PPT」 |
-| 英文 | "Make a PPT" "Convert this to slides" "Generate a slide deck" |
-| 指定模板 | 「套用 ./template.pptx 做簡報」 |
-| 指定風格 | 「做成 KPI dashboard 風格，品牌色 #007A33」 |
-| 指定頁數 | 「控制在 12 頁」 |
-| 指定受眾 | 「給老闆看的精簡版」 |
-
-### SKILL.md 的角色
-
-`SKILL.md` 是 AI Skill 的核心設定檔，它告訴 AI：
-
-1. **何時觸發**：front-matter 中的 `name` 和 `description` 讓 AI 判斷使用者意圖
-2. **如何執行**：Pipeline 定義（Phase 0-4）指導 AI 的工作流程
-3. **格式規範**：投影片資料 schema、內容量限制、排版規則
-4. **錯誤處理**：各種 fallback 策略
-
-你可以根據需求修改 `SKILL.md` 來調整 AI 的行為。
+| 中文 | 「幫我做簡報」「把這份文件轉成投影片」 |
+| 英文 | "Make a PPT" "Convert this to slides" |
+| 進階 | 「套用 ./template.pptx，品牌色 #007A33，控制在 12 頁」 |
 
 ---
 
@@ -501,12 +249,12 @@ AI 會自動：
 
 ---
 
-## Pipeline 流程
+## Pipeline
 
 ```
 Phase 0  規劃大綱（AI 根據 prompt-template.md 自動執行）
-Phase 1  內容解析 → slides.json（AI 產出，或使用者提供 JSON / YAML / Markdown）
-Phase 2  Mermaid 圖表平行渲染（含快取與 CJK fallback）
+Phase 1  內容解析 → slides.json（AI 產出 / 使用者提供）
+Phase 2  Mermaid 圖表平行渲染（快取 + CJK fallback）
 Phase 3  python-pptx 組裝（Layout 查找 → auto-fit → 品牌 chrome）
 Phase 4  品質驗證
 ```
@@ -517,34 +265,22 @@ Phase 4  品質驗證
 
 ```
 pptx-generator/
-├── pptx_generator/                  # Python 套件（pip install 用）
-│   ├── __init__.py
-│   ├── __main__.py                  # python -m pptx_generator
-│   ├── generator.py                 # 核心邏輯
-│   ├── markdown_parser.py           # Markdown → slides 轉換
-│   └── assets/
-│       ├── default-template.pptx
-│       └── example-slides.json
-├── scripts/
-│   └── generate_pptx_template.py    # Skill 用的入口（向後相容）
-├── assets/                           # 範例與資源檔
-│   ├── default-template.pptx
-│   ├── example-output.pptx
-│   ├── example-slides.json
-│   ├── example-slides.yaml
-│   ├── example-slides.md
-│   └── prompt-template.md            # AI 提示詞樣板（核心）
-├── SKILL.md                          # AI Skill 定義
-├── pyproject.toml                    # PyPI 套件設定
-├── requirements.txt
-├── MANIFEST.in
-├── LICENSE
-├── README.md                         # 繁體中文
-└── README.en.md                      # English
+├── pptx_generator/              # Python 套件
+│   ├── generator.py             # 核心邏輯
+│   ├── markdown_parser.py       # Markdown → slides
+│   └── assets/                  # 內建模板 + 範例
+├── assets/                      # 範例與資源檔
+│   ├── prompt-template.md       # AI 提示詞樣板（核心）
+│   ├── example-slides.*         # JSON / YAML / MD 範例
+│   └── default-template.pptx
+├── SKILL.md                     # AI Skill 定義
+├── pyproject.toml
+├── README.md                    # 繁體中文
+└── README.en.md                 # English
 ```
 
 ---
 
 ## License
 
-MIT License — 詳見 [LICENSE](LICENSE)。
+MIT — 詳見 [LICENSE](LICENSE)。
