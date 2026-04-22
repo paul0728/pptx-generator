@@ -30,7 +30,7 @@ pptx-generate 生成 PPTX 簡報
 
 ### 提示詞樣板 (Prompt Template)
 
-本工具提供一份標準化的提示詞樣板：**[assets/prompt-template.md](assets/prompt-template.md)**
+本工具提供一份標準化的提示詞樣板：**[pptx_generator/assets/prompt-template.md](pptx_generator/assets/prompt-template.md)**
 
 此樣板包含：
 - 完整的 slides.json schema
@@ -63,7 +63,7 @@ pptx-generate 生成 PPTX 簡報
 
 | 輸入 | 範例 | 未提供時的行為 |
 |------|------|---------------|
-| 模板檔案 | 「套用 ./template.pptx」 | 優先用 `assets/default-template.pptx`；不存在則用空白簡報 |
+| 模板檔案 | 「套用 ./template.pptx」 | 優先用 `pptx_generator/assets/default-template.pptx`；不存在則用空白簡報 |
 | 目標受眾 | 「給老闆看」「給 IT 團隊」 | 依內容性質自動判斷 |
 | 語言 | 「用英文」「中英混合」 | 跟隨內容來源語言；混合時預設繁體中文 |
 | 頁數 | 「控制在 15 頁」 | 依內容量自動估算 |
@@ -83,9 +83,9 @@ pptx-generate 生成 PPTX 簡報
 
 ### 1. JSON（推薦 — AI 產出 + 完整控制）
 
-由 AI 根據 [prompt-template.md](assets/prompt-template.md) 自動產出，或手動撰寫。
+由 AI 根據 [prompt-template.md](pptx_generator/assets/prompt-template.md) 自動產出，或手動撰寫。
 
-- 範例：[assets/example-slides.json](assets/example-slides.json)
+- 範例：[pptx_generator/assets/example-slides.json](pptx_generator/assets/example-slides.json)
 
 ### 2. Markdown（手動撰寫最直覺）
 
@@ -153,11 +153,10 @@ Phase 3  python-pptx 組裝
 Phase 4  品質驗證
 ```
 
-- **Phase 0 + 1 由 AI 自動完成**：AI 讀取 [assets/prompt-template.md](assets/prompt-template.md) 中的 schema 與規則，根據使用者提供的內容自動產出 `slides.json`。
+- **Phase 0 + 1 由 AI 自動完成**：AI 讀取 [pptx_generator/assets/prompt-template.md](pptx_generator/assets/prompt-template.md) 中的 schema 與規則，根據使用者提供的內容自動產出 `slides.json`。
 - 若使用者已提供投影片資料檔（JSON / YAML / Markdown），跳過 Phase 0 和 Phase 1，直接進入 Phase 2。
-- 參考腳本：[scripts/generate_pptx_template.py](scripts/generate_pptx_template.py)
-- 範例檔案：[assets/example-slides.json](assets/example-slides.json) / [assets/example-slides.yaml](assets/example-slides.yaml) / [assets/example-slides.md](assets/example-slides.md)
-- 提示詞樣板：[assets/prompt-template.md](assets/prompt-template.md)
+- 範例檔案：[pptx_generator/assets/example-slides.json](pptx_generator/assets/example-slides.json) / [pptx_generator/assets/example-slides.yaml](pptx_generator/assets/example-slides.yaml) / [pptx_generator/assets/example-slides.md](pptx_generator/assets/example-slides.md)
+- 提示詞樣板：[pptx_generator/assets/prompt-template.md](pptx_generator/assets/prompt-template.md)
 - 依賴：`python-pptx`、`requests`、`Pillow`（YAML 輸入另需 `pyyaml`）
 
 ### Quickstart
@@ -193,14 +192,14 @@ pptx-generate \
 
 > `--json` 仍可使用（向後相容），但建議改用 `--input`。
 
-未指定 `--template` 時，優先使用 `assets/default-template.pptx`，不存在則用空白簡報。
+未指定 `--template` 時，優先使用 `pptx_generator/assets/default-template.pptx`，不存在則用空白簡報。
 未指定 `--footer` / `--version-label` 時，會自動使用 `presentation_metadata.title` / `.version`。
 
 ---
 
 ## Phase 0 — 大綱規劃
 
-> **此階段由 AI 自動執行。** AI 讀取 [assets/prompt-template.md](assets/prompt-template.md) 中的規則來規劃大綱。
+> **此階段由 AI 自動執行。** AI 讀取 [pptx_generator/assets/prompt-template.md](pptx_generator/assets/prompt-template.md) 中的規則來規劃大綱。
 
 1. 根據內容量與需求，估算合理頁數。
 2. 列出每一頁的標題與 slide type。
@@ -212,7 +211,7 @@ pptx-generate \
 
 ## Phase 1 — 內容解析 → slides.json
 
-> **此階段由 AI 自動執行。** AI 根據 [assets/prompt-template.md](assets/prompt-template.md) 中的 schema、slide types、內容量限制，將使用者的原始內容轉換為 `slides.json`。
+> **此階段由 AI 自動執行。** AI 根據 [pptx_generator/assets/prompt-template.md](pptx_generator/assets/prompt-template.md) 中的 schema、slide types、內容量限制，將使用者的原始內容轉換為 `slides.json`。
 
 ### slides.json Schema
 

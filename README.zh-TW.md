@@ -8,7 +8,7 @@
 
 將任何文件、報告或結構化內容轉換為企業級 PPTX 簡報。
 
-**推薦用法：** 把你的內容 + [提示詞樣板](assets/prompt-template.md) 餵給 AI → AI 產出 `slides.json` → 工具生成 PPTX。不需要手寫任何投影片資料。
+**推薦用法：** 把你的內容 + [提示詞樣板](pptx_generator/assets/prompt-template.md) 餵給 AI → AI 產出 `slides.json` → 工具生成 PPTX。不需要手寫任何投影片資料。
 
 也可作為 AI IDE Skill，直接說「幫我做簡報」就能自動完成全部流程。
 
@@ -42,7 +42,7 @@ pip install -e ".[all]"
 
 ### 方式一：AI 自動產出 JSON（推薦）
 
-1. 將 [`assets/prompt-template.md`](assets/prompt-template.md) 貼給任何 AI（ChatGPT、Claude、Gemini 等）
+1. 將 [`pptx_generator/assets/prompt-template.md`](pptx_generator/assets/prompt-template.md) 貼給任何 AI（ChatGPT、Claude、Gemini 等）
 2. 提供你的需求描述或原始內容
 3. AI 產出 `slides.json`，存檔後執行：
 
@@ -50,7 +50,7 @@ pip install -e ".[all]"
 pptx-generate --input slides.json --out output.pptx -v
 ```
 
-樣板包含完整 schema、11 種投影片類型範例、內容量限制規則。範例：[`assets/example-slides.json`](assets/example-slides.json)
+樣板包含完整 schema、11 種投影片類型範例、內容量限制規則。範例：[`pptx_generator/assets/example-slides.json`](pptx_generator/assets/example-slides.json)
 
 ### 方式二：手動撰寫 Markdown
 
@@ -90,7 +90,7 @@ pptx-generate --input slides.md --out output.pptx -v
 
 > Markdown 僅支援基本類型。需要 `kpi_slide`、`table`、`two_column` 等進階類型時，請用 JSON 或 YAML。
 
-完整範例：[`assets/example-slides.md`](assets/example-slides.md)
+完整範例：[`pptx_generator/assets/example-slides.md`](pptx_generator/assets/example-slides.md)
 
 ### 方式三：YAML
 
@@ -100,7 +100,7 @@ pptx-generate --input slides.md --out output.pptx -v
 pptx-generate --input slides.yaml --out output.pptx -v
 ```
 
-完整範例：[`assets/example-slides.yaml`](assets/example-slides.yaml)
+完整範例：[`pptx_generator/assets/example-slides.yaml`](pptx_generator/assets/example-slides.yaml)
 
 ### 方式四：在 AI IDE 中使用
 
@@ -181,7 +181,7 @@ print(data["slides"])  # 可傳給 generate() 或自行修改
 **Kiro：**
 
 ```bash
-git clone https://github.com/paul0728/pptx-generator.git .kiro/skills/pptx-generator
+git clone --depth 1 https://github.com/paul0728/pptx-generator.git .kiro/skills/pptx-generator
 pip install python-pptx requests Pillow
 ```
 
@@ -206,8 +206,9 @@ npx skills remove pptx-generator           # 移除 skill
 your-project/
 ├── .kiro/skills/pptx-generator/     ← Kiro
 │   ├── SKILL.md
-│   ├── assets/
 │   └── pptx_generator/
+│       ├── generator.py
+│       └── assets/
 │
 ├── .claude/skills/pptx-generator/   ← Claude Code（npx skills 建立）
 │   └── ...
@@ -261,10 +262,9 @@ pptx-generator/
 │   ├── generator.py             # 核心邏輯
 │   ├── markdown_parser.py       # Markdown → slides
 │   └── assets/                  # 內建模板 + 範例
-├── assets/                      # 範例與資源檔
-│   ├── prompt-template.md       # AI 提示詞樣板（核心）
-│   ├── example-slides.*         # JSON / YAML / MD 範例
-│   └── default-template.pptx
+│       ├── prompt-template.md   # AI 提示詞樣板（核心）
+│       ├── example-slides.*     # JSON / YAML / MD 範例
+│       └── default-template.pptx
 ├── SKILL.md                     # AI Skill 定義
 ├── pyproject.toml
 ├── README.md                    # English

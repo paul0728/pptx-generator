@@ -7,7 +7,7 @@ Pipeline (see SKILL.md):
     Phase 4  quality verification
 
 Usage:
-    python generate_pptx_template.py --json slides.json \\
+    pptx-generate --input slides.json \\
         [--template template.pptx] [--out output.pptx] [-v]
 
 Dependencies:
@@ -48,16 +48,12 @@ def _find_asset_dir() -> Path:
     """Find the assets directory.
 
     Priority:
-    1. Package-bundled assets (pip install)
-    2. Skill-style layout (../ from scripts/)
-    3. Repo root layout (../ from pptx_generator/)
+    1. Package-bundled assets (pip install / skill clone)
+    2. Repo root layout (fallback)
     """
     pkg_assets = Path(__file__).resolve().parent / "assets"
     if pkg_assets.is_dir():
         return pkg_assets.parent
-    skill_assets = Path(__file__).resolve().parent.parent / "assets"
-    if skill_assets.is_dir():
-        return skill_assets.parent
     return Path(__file__).resolve().parent.parent
 
 

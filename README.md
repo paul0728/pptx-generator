@@ -8,7 +8,7 @@ English | [繁體中文](README.zh-TW.md)
 
 Convert any document, report, or structured content into corporate-grade PPTX presentations.
 
-**Recommended workflow:** Feed your content + the [prompt template](assets/prompt-template.md) to any AI → AI generates `slides.json` → tool produces PPTX. No manual slide data required.
+**Recommended workflow:** Feed your content + the [prompt template](pptx_generator/assets/prompt-template.md) to any AI → AI generates `slides.json` → tool produces PPTX. No manual slide data required.
 
 Also works as an AI IDE Skill — just say "make me a presentation" and the AI handles everything.
 
@@ -42,7 +42,7 @@ After installation, use `pptx-generate` command or `python -m pptx_generator`.
 
 ### Option 1: AI-generated JSON (Recommended)
 
-1. Paste [`assets/prompt-template.md`](assets/prompt-template.md) to any AI (ChatGPT, Claude, Gemini, etc.)
+1. Paste [`pptx_generator/assets/prompt-template.md`](pptx_generator/assets/prompt-template.md) to any AI (ChatGPT, Claude, Gemini, etc.)
 2. Provide your source content (documents, reports, notes)
 3. AI generates `slides.json` — save and run:
 
@@ -50,7 +50,7 @@ After installation, use `pptx-generate` command or `python -m pptx_generator`.
 pptx-generate --input slides.json --out output.pptx -v
 ```
 
-The template includes the complete schema, all 11 slide type examples, and content limit rules. Example: [`assets/example-slides.json`](assets/example-slides.json)
+The template includes the complete schema, all 11 slide type examples, and content limit rules. Example: [`pptx_generator/assets/example-slides.json`](pptx_generator/assets/example-slides.json)
 
 ### Option 2: Write Markdown manually
 
@@ -90,7 +90,7 @@ pptx-generate --input slides.md --out output.pptx -v
 
 > Markdown only supports basic types. For `kpi_slide`, `table`, `two_column` etc., use JSON or YAML.
 
-Full example: [`assets/example-slides.md`](assets/example-slides.md)
+Full example: [`pptx_generator/assets/example-slides.md`](pptx_generator/assets/example-slides.md)
 
 ### Option 3: YAML
 
@@ -100,7 +100,7 @@ More readable than JSON, supports flat format (no nested `content` required). Re
 pptx-generate --input slides.yaml --out output.pptx -v
 ```
 
-Full example: [`assets/example-slides.yaml`](assets/example-slides.yaml)
+Full example: [`pptx_generator/assets/example-slides.yaml`](pptx_generator/assets/example-slides.yaml)
 
 ### Option 4: Use in AI IDE
 
@@ -181,7 +181,7 @@ Choose based on your AI agent:
 **Kiro:**
 
 ```bash
-git clone https://github.com/paul0728/pptx-generator.git .kiro/skills/pptx-generator
+git clone --depth 1 https://github.com/paul0728/pptx-generator.git .kiro/skills/pptx-generator
 pip install python-pptx requests Pillow
 ```
 
@@ -206,8 +206,9 @@ npx skills remove pptx-generator           # Remove skill
 your-project/
 ├── .kiro/skills/pptx-generator/     ← Kiro
 │   ├── SKILL.md
-│   ├── assets/
 │   └── pptx_generator/
+│       ├── generator.py
+│       └── assets/
 │
 ├── .claude/skills/pptx-generator/   ← Claude Code (via npx skills)
 │   └── ...
@@ -261,10 +262,9 @@ pptx-generator/
 │   ├── generator.py             # Core logic
 │   ├── markdown_parser.py       # Markdown → slides
 │   └── assets/                  # Built-in template + examples
-├── assets/                      # Examples & resources
-│   ├── prompt-template.md       # AI prompt template (core)
-│   ├── example-slides.*         # JSON / YAML / MD examples
-│   └── default-template.pptx
+│       ├── prompt-template.md   # AI prompt template (core)
+│       ├── example-slides.*     # JSON / YAML / MD examples
+│       └── default-template.pptx
 ├── SKILL.md                     # AI Skill definition
 ├── pyproject.toml
 ├── README.md                    # English

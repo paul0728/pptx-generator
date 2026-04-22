@@ -1,0 +1,5 @@
+# Exclude from git archive / export
+.github/        export-ignore
+.kiro/          export-ignore
+.vscode/        export-ignore
+.gitattributes  export-ignore

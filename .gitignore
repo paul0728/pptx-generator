@@ -25,3 +25,6 @@ Thumbs.db
 
 # Output files
 output_presentation.pptx
+*.pptx
+!pptx_generator/assets/default-template.pptx
+slides.json
