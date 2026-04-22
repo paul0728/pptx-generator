@@ -290,6 +290,24 @@ Phase 1 生成資料時就必須控制每頁內容量。Phase 3 的 auto-fit 是
 | `table` | ≤ 12 列 × 5 欄 | 分頁或改用 `kpi_slide` |
 | `kpi_slide` | ≤ 6 個 KPI | 拆成多頁 |
 
+### 類型選擇規則
+
+根據內容性質選擇最適合的投影片類型，不要全部用 `bullet_points`：
+
+| 內容性質 | 應使用的類型 | 說明 |
+|---------|------------|------|
+| 有順序的步驟、流程、pipeline | `architecture_diagram` | 用 Mermaid flowchart 畫流程圖，比條列更直觀 |
+| 系統架構、元件關係、資料流 | `architecture_diagram` | 用 Mermaid 呈現元件之間的連接關係 |
+| 兩個方案 / 優缺點對比 | `two_column` | 左右並排比較 |
+| 數據指標、KPI、成果數字 | `kpi_slide` | 大數字卡片，視覺衝擊力強 |
+| 規格比較、版本歷程、多欄資料 | `table` | 結構化表格 |
+| 程式碼、指令、設定檔 | `code_demo` | 等寬字體展示 |
+| 一般說明、要點列舉 | `bullet_points` | 條列內容 |
+
+> **重要：** 遇到「步驟 1 → 步驟 2 → 步驟 3」這類有順序性的操作流程時，
+> 優先使用 `architecture_diagram` 搭配 Mermaid flowchart，而非 `bullet_points`。
+> 流程圖能讓觀眾一眼看出步驟之間的先後關係和分支邏輯。
+
 ### 排版規則
 
 | 規則 | 說明 |

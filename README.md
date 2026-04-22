@@ -191,6 +191,8 @@ pip install python-pptx requests Pillow
 # Windows (PowerShell)
 git clone --depth 1 https://github.com/paul0728/pptx-generator.git .kiro/skills/pptx-generator
 Remove-Item -Force .kiro/skills/pptx-generator/.git, .kiro/skills/pptx-generator/.github, .kiro/skills/pptx-generator/.gitattributes, .kiro/skills/pptx-generator/.gitignore, .kiro/skills/pptx-generator/LICENSE, .kiro/skills/pptx-generator/MANIFEST.in, .kiro/skills/pptx-generator/pyproject.toml, .kiro/skills/pptx-generator/README.md, .kiro/skills/pptx-generator/README.zh-TW.md, .kiro/skills/pptx-generator/requirements.txt -Recurse -ErrorAction SilentlyContinue
+
+```
 pip install python-pptx requests Pillow
 ```
 
