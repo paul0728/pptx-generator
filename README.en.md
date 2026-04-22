@@ -359,18 +359,23 @@ print(data["slides"])  # pass to generate() or modify before generating
 
 This tool can be used as an AI IDE Skill. Once installed, the AI handles the entire flow from content analysis to PPTX generation.
 
-### Install via npx (Recommended)
+### Install via npx skills (Recommended)
 
-One command to download the skill into your project:
+One command to install the skill — supports 40+ AI agents (Claude Code, Cursor, Codex, Kiro, etc.):
 
-**Windows (PowerShell):**
-```powershell
-npx degit paul0728/pptx-generator .skills/pptx-generator
+```bash
+npx skills add paul0728/pptx-generator
 ```
 
-**Linux / macOS:**
+> [`npx skills`](https://github.com/vercel-labs/skills) automatically installs to the correct directory for your AI agent.
+
+Common commands:
+
 ```bash
-npx degit paul0728/pptx-generator .skills/pptx-generator
+npx skills add paul0728/pptx-generator    # Install skill
+npx skills list                            # List installed skills
+npx skills update                          # Update all skills
+npx skills remove pptx-generator           # Remove skill
 ```
 
 Then install Python dependencies:

@@ -361,21 +361,24 @@ print(data["slides"])  # 可直接傳給 generate 或自行修改後再生成
 
 ### 安裝步驟
 
-#### 步驟 1：下載 Skill 到專案的 `.skills/` 目錄
+#### 步驟 1：下載 Skill 到專案
 
-**使用 npx（推薦，一行搞定）：**
+**使用 npx skills（推薦，支援多種 AI agent）：**
 
-**Windows (PowerShell):**
-```powershell
-npx degit paul0728/pptx-generator .skills/pptx-generator
-```
-
-**Linux / macOS:**
 ```bash
-npx degit paul0728/pptx-generator .skills/pptx-generator
+npx skills add paul0728/pptx-generator
 ```
 
-> `npx degit` 會下載 repo 最新版本，不含 `.git` 歷史，乾淨輕量。需要 Node.js 環境。
+> [`npx skills`](https://github.com/vercel-labs/skills) 支援 Claude Code、Cursor、Codex、Kiro 等 40+ 種 AI agent，自動安裝到對應目錄。
+
+常用指令：
+
+```bash
+npx skills add paul0728/pptx-generator    # 安裝 skill
+npx skills list                            # 列出已安裝的 skills
+npx skills update                          # 更新所有 skills
+npx skills remove pptx-generator           # 移除 skill
+```
 
 **或使用 git clone：**
 
